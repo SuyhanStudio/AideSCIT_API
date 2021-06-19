@@ -1,6 +1,11 @@
 package com.sgpublic.scit.tool.api.handler
 
+import com.sgpublic.scit.tool.api.Application
+import com.sgpublic.scit.tool.api.exceptions.InvalidSignException
+import com.sgpublic.scit.tool.api.result.FailedResult
 import org.springframework.http.HttpStatus
+import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -10,18 +15,51 @@ import javax.servlet.http.HttpServletResponse
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-    @ResponseStatus(HttpStatus.MOVED_PERMANENTLY)
+    /**
+     * 拦截404，生产环境下跳转主页
+     */
     @ExceptionHandler(NoHandlerFoundException::class)
-    fun handleNoHandlerFoundException(response: HttpServletResponse){
+    fun handleNoHandlerFoundException(exception: Exception, response: HttpServletResponse){
+        if (Application.DEBUG){
+            response.status = HttpStatus.NOT_FOUND.value()
+            return
+        }
+        response.status = HttpStatus.MOVED_PERMANENTLY.value()
         response.setHeader("Location", "https://scit.sgpublic.xyz/")
     }
+
+    /**
+     * 服务 Sign 错误拦截
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(InvalidSignException::class)
+    fun handleInvalidSignException(): Map<String, Any> {
+        return FailedResult.INVALID_SIGN
+    }
+
+
+    /**
+     * 容错处理，参数解析失败错误拦截
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(exception: Exception, request: HttpServletRequest): Map<String, Any> {
+        return FailedResult.INTERNAL_SERVER_ERROR
+    }
+
+    /**
+     * 容错处理，参数验证异常错误拦截
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValidException(exception: Exception, request: HttpServletRequest): Map<String, Any> {
+        return FailedResult.INTERNAL_SERVER_ERROR
+    }
+
 
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(Exception::class)
     fun handleException(exception: Exception, request: HttpServletRequest): Map<String, Any> {
-        println(exception::class.simpleName)
-        return mutableMapOf(
-            "code" to -200
-        )
+        return FailedResult.INTERNAL_SERVER_ERROR
     }
 }
