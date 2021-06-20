@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <contextName>logback</contextName>
+    <contextName>SCITEduTool</contextName>
 
-    <property name="log.path" value="./log/"/>
+    <property name="log.path" value="./log"/>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <!-- <filter class="com.example.logback.filter.MyFilter" /> -->
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>TRACE</level>
-        </filter>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{HH:mm:ss.SSS} %contextName %level \(%file:%line\): %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.path}logback.html</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}%d{yyyy-MM-dd}.%i.html</fileNamePattern>
-            <maxFileSize>1MB</maxFileSize>
-        </rollingPolicy>
+        <filter class="com.sgpublic.scit.tool.api.core.logback.filter.ConsoleFilter" />
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="ch.qos.logback.classic.html.HTMLLayout">
-                <pattern>%level%d{yyyy-MM-dd HH:mm:ss.SSS}%file%line%msg</pattern>
+            <layout class="com.sgpublic.scit.tool.api.core.logback.ConsolePatternLayout">
+                <pattern>%d{HH:mm:ss.SSS} %contextName %-5level \(%file:%line\): %unc%msg%n</pattern>
             </layout>
         </encoder>
     </appender>
 
-    <root level="debug">
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="com.sgpublic.scit.tool.api.core.logback.filter.FileFilter" />
+        <file>${log.path}/logback.html</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/%d{yyyy-MM-dd}/logback.%i.html</fileNamePattern>
+            <MaxHistory>30</MaxHistory>
+            <maxFileSize>1MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="ch.qos.logback.classic.html.HTMLLayout">
+                <pattern>%level%d{yyyy-MM-dd HH:mm:ss.SSS}%file%line%unf%msg</pattern>
+                <!--%unf: 用户名，未传入则为空，样例：2019xxxxxx74-->
+            </layout>
+        </encoder>
+    </appender>
+
+    <root level="ALL">
         <appender-ref ref="console" />
         <appender-ref ref="file" />
     </root>
-
-    <logger name="com.example.logback" level="debug" />
 
 </configuration>

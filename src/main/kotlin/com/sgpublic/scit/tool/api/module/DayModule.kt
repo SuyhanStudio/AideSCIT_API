@@ -29,7 +29,7 @@ class DayModule {
 
             return SuccessResult(
                 "day_count" to timeBetween,
-                "date" to sdf.format(DATE_START),
+                "date" to sdf.format(DATE_START.time),
                 "semester" to SEMESTER,
                 "school_year" to SCHOOL_YEAR,
                 "evaluation" to EVALUATION

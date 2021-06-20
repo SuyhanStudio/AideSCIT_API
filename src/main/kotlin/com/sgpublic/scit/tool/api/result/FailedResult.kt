@@ -2,6 +2,11 @@ package com.sgpublic.scit.tool.api.result
 
 import com.sgpublic.scit.tool.api.core.SimpleMap
 
+/**
+ * 处理失败结果封装
+ * @param code 错误码
+ * @param message 错误说明
+ */
 class FailedResult(code: Int, message: String) : SimpleMap() {
     companion object {
         @JvmStatic

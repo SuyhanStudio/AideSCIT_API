@@ -1,5 +1,8 @@
 package com.sgpublic.scit.tool.api.core
 
+/**
+ * 启动传参读取
+ */
 class ArgumentReader(args: Array<String>) {
     private val singleItems: ArrayList<String> = arrayListOf()
     private val strings: MutableMap<String, String> = mutableMapOf()
@@ -39,14 +42,29 @@ class ArgumentReader(args: Array<String>) {
         }
     }
 
+    /**
+     * 判断单个参数是否存在
+     * @param key 参数，例如“--debug”
+     */
     fun containsItem(key: String): Boolean {
         return singleItems.contains(key)
     }
 
+    /**
+     * 获取 String 类型的参数值
+     * @param key 参数名称
+     * @return 返回参数值，若参数不存在则返回 null
+     */
     fun getString(key: String): String? {
         return getString(key, null)
     }
 
+    /**
+     * 获取 String 类型的参数值
+     * @param key 参数名称
+     * @param default 默认值
+     * @return 返回参数值，若参数不存在则返回默认值
+     */
     fun getString(key: String, default: String?): String? {
         if (!strings.containsKey(key)){
             return default
@@ -54,10 +72,21 @@ class ArgumentReader(args: Array<String>) {
         return strings[key]
     }
 
+    /**
+     * 获取 String 类型的参数值
+     * @param key 参数名称
+     * @return 返回参数值，若参数不存在则返回 null
+     */
     fun getInt(key: String): Int {
         return getInt(key, 0)
     }
 
+    /**
+     * 获取 String 类型的参数值
+     * @param key 参数名称
+     * @param default 默认值
+     * @return 返回参数值，若参数不存在则返回默认值
+     */
     fun getInt(key: String, default: Int): Int {
         ints[key]?.let {
             return it
@@ -65,10 +94,21 @@ class ArgumentReader(args: Array<String>) {
         return default
     }
 
+    /**
+     * 获取 String 类型的参数值
+     * @param key 参数名称
+     * @return 返回参数值，若参数不存在则返回 null
+     */
     fun getBoolean(key: String): Boolean {
         return getBoolean(key, false)
     }
 
+    /**
+     * 获取 Boolean 类型的参数值
+     * @param key 参数名称
+     * @param default 默认值
+     * @return 返回参数值，若参数不存在则返回默认值
+     */
     fun getBoolean(key: String, default: Boolean): Boolean {
         booleans[key]?.let {
             return it
@@ -76,10 +116,21 @@ class ArgumentReader(args: Array<String>) {
         return default
     }
 
+    /**
+     * 获取 String 类型的参数值
+     * @param key 参数名称
+     * @return 返回参数值，若参数不存在则返回 null
+     */
     fun getDouble(key: String): Double {
         return getDouble(key, 0.0)
     }
 
+    /**
+     * 获取 Double 类型的参数值
+     * @param key 参数名称
+     * @param default 默认值
+     * @return 返回参数值，若参数不存在则返回默认值
+     */
     fun getDouble(key: String, default: Double): Double {
         doubles[key]?.let {
             return it

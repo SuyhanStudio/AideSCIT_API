@@ -13,6 +13,7 @@ import org.springframework.web.servlet.NoHandlerFoundException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/** 全局错误拦截器 */
 @RestControllerAdvice
 class GlobalExceptionHandler {
     /**
@@ -56,7 +57,9 @@ class GlobalExceptionHandler {
         return FailedResult.INTERNAL_SERVER_ERROR
     }
 
-
+    /**
+     * 拦截其余所有错误
+     */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(Exception::class)
     fun handleException(exception: Exception, request: HttpServletRequest): Map<String, Any> {

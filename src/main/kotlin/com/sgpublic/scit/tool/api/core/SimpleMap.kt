@@ -68,7 +68,7 @@ open class SimpleMap: MutableMap<String, Any> {
         } else {
             keyCollection.add(key)
             valueCollection.add(value)
-            valueCollection.size
+            valueCollection.size - 1
         }
         return valueCollection[index]
     }
