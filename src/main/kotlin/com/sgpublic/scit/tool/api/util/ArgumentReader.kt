@@ -1,4 +1,4 @@
-package com.sgpublic.scit.tool.api.core
+package com.sgpublic.scit.tool.api.util
 
 /**
  * 启动传参读取

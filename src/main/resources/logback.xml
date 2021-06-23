@@ -2,21 +2,21 @@
 <configuration>
 
     <contextName>SCITEduTool</contextName>
+    <conversionRule conversionWord="colored" converterClass="com.sgpublic.scit.tool.spring.logback.ColoredConsoleConverter"/>
 
     <property name="log.path" value="./log"/>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- <filter class="com.example.logback.filter.MyFilter" /> -->
-        <filter class="com.sgpublic.scit.tool.api.core.logback.filter.ConsoleFilter" />
+        <filter class="com.sgpublic.scit.tool.spring.logback.filter.ConsoleFilter" />
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="com.sgpublic.scit.tool.api.core.logback.ConsolePatternLayout">
-                <pattern>%d{HH:mm:ss.SSS} %contextName %-5level \(%file:%line\): %unc%msg%n</pattern>
+            <layout class="com.sgpublic.scit.tool.spring.logback.ConsolePatternLayout">
+                <pattern>%colored(%d{HH:mm:ss.SSS} %-5level \(%trace\): %unc%msg%n)</pattern>
             </layout>
         </encoder>
     </appender>
 
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <filter class="com.sgpublic.scit.tool.api.core.logback.filter.FileFilter" />
+        <filter class="com.sgpublic.scit.tool.spring.logback.filter.FileFilter" />
         <file>${log.path}/logback.html</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/%d{yyyy-MM-dd}/logback.%i.html</fileNamePattern>
@@ -25,8 +25,7 @@
         </rollingPolicy>
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="ch.qos.logback.classic.html.HTMLLayout">
-                <pattern>%level%d{yyyy-MM-dd HH:mm:ss.SSS}%file%line%unf%msg</pattern>
-                <!--%unf: 用户名，未传入则为空，样例：2019xxxxxx74-->
+                <pattern>%level%d{yyyy-MM-dd HH:mm:ss.SSS}%trace%unf%msg</pattern>
             </layout>
         </encoder>
     </appender>

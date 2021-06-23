@@ -1,14 +1,16 @@
-package com.sgpublic.scit.tool.api.handler
+package com.sgpublic.scit.tool.spring
 
-import com.sgpublic.scit.tool.api.Application
+import com.sgpublic.scit.tool.Application
 import com.sgpublic.scit.tool.api.exceptions.InvalidSignException
 import com.sgpublic.scit.tool.api.result.FailedResult
+import org.springframework.beans.MethodInvocationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentConversionNotSupportedException
 import org.springframework.web.servlet.NoHandlerFoundException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -37,7 +39,6 @@ class GlobalExceptionHandler {
     fun handleInvalidSignException(): Map<String, Any> {
         return FailedResult.INVALID_SIGN
     }
-
 
     /**
      * 容错处理，参数解析失败错误拦截

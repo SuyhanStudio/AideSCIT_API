@@ -1,7 +1,7 @@
-package com.sgpublic.scit.tool.api
+package com.sgpublic.scit.tool
 
-import com.sgpublic.scit.tool.api.core.ArgumentReader
-import com.sgpublic.scit.tool.api.core.Log
+import com.sgpublic.scit.tool.api.util.ArgumentReader
+import com.sgpublic.scit.tool.api.util.Log
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.runApplication

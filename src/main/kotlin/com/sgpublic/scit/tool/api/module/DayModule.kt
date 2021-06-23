@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Component
 class DayModule {
     companion object {
         private const val SEMESTER = 2

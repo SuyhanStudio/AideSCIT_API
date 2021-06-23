@@ -1,7 +1,7 @@
 package com.sgpublic.scit.tool.api.controller
 
-import com.sgpublic.scit.tool.api.core.Log
 import com.sgpublic.scit.tool.api.module.DayModule
+import com.sgpublic.scit.tool.api.util.Log
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 class DayController {
     @RequestMapping("/scit/edutool/day")
     fun day(): Map<String, Any> {
-        Log.d("测试输出")
+        Log.d("test", "201940010074")
         return DayModule.getDay()
     }
 }

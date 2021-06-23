@@ -1,10 +1,10 @@
-package com.sgpublic.scit.tool.api.core.logback.filter
+package com.sgpublic.scit.tool.spring.logback.filter
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.filter.AbstractMatcherFilter
 import ch.qos.logback.core.spi.FilterReply
-import com.sgpublic.scit.tool.api.Application
+import com.sgpublic.scit.tool.Application
 
 /**
  * 控制台输出过滤器
@@ -41,7 +41,7 @@ open class ConsoleFilter: AbstractMatcherFilter<ILoggingEvent>() {
     }
 
     /**
-     * 若日志来自外部，则始终按照等级 Level.WARN 过滤
+     * 若日志来自外部，则始终按照等级 [Level.WARN] 过滤
      */
     private fun filterOnOther(event: ILoggingEvent): FilterReply {
         return if (event.level.isGreaterOrEqual(Level.WARN)) {
