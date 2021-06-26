@@ -27,6 +27,8 @@ dependencies {
 
     // MariaDB 驱动
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+    // JPA
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     // okhttp 用于网络访问
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
     // json 解析
@@ -52,5 +54,5 @@ tasks.withType<Test> {
 
 tasks.bootJar {
     // 设置打包文件名称
-    archiveFileName.set("SCITEduTool_API_SpringBoot")
+    archiveFileName.set("SCITEduTool_API_SpringBoot.jar")
 }

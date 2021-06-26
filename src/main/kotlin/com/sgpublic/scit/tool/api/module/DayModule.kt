@@ -1,7 +1,6 @@
 package com.sgpublic.scit.tool.api.module
 
 import com.sgpublic.scit.tool.api.result.SuccessResult
-import org.springframework.stereotype.Component
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -6,8 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-class Configuration: WebMvcConfigurer {
-
+class CurrentConfig: WebMvcConfigurer {
     /** 添加自定义拦截器 */
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(SignInterceptor())

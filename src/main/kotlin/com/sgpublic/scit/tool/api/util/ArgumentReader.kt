@@ -10,6 +10,41 @@ class ArgumentReader(args: Array<String>) {
     private val doubles: MutableMap<String, Double> = mutableMapOf()
     private val booleans: MutableMap<String, Boolean> = mutableMapOf()
 
+    companion object {
+        /**
+         * 整理请求表单，忽略多余参数
+         * @param map 请求传入的表单
+         * @return 返回按 key 排序的键值对集合
+         */
+        fun readRequestMap(map: Map<String, Array<String>>): Map<String, Any> {
+            val result = mutableMapOf<String, Any>()
+            for ((key, values) in map.toSortedMap()) {
+                if (values.isEmpty()){
+                    continue
+                }
+                val value = values[0]
+                var valueCast: Any?
+                valueCast = value.toIntOrNull()
+                if (valueCast != null){
+                    result[key] = valueCast
+                    continue
+                }
+                valueCast = value.toBooleanStrictOrNull()
+                if (valueCast != null){
+                    result[key] = valueCast
+                    continue
+                }
+                valueCast = value.toDoubleOrNull()
+                if (valueCast != null){
+                    result[key] = valueCast
+                    continue
+                }
+                result[key] = value
+            }
+            return result
+        }
+    }
+
     /**
      * 载入所有启动参数
      */
@@ -25,17 +60,17 @@ class ArgumentReader(args: Array<String>) {
             var valueCast: Any?
             valueCast = value.toIntOrNull()
             if (valueCast != null){
-                ints[key] = valueCast
+                ints[key] = valueCast as Int
                 continue
             }
             valueCast = value.toBooleanStrictOrNull()
             if (valueCast != null){
-                booleans[key] = valueCast
+                booleans[key] = valueCast as Boolean
                 continue
             }
             valueCast = value.toDoubleOrNull()
             if (valueCast != null){
-                doubles[key] = valueCast
+                doubles[key] = valueCast as Double
                 continue
             }
             strings[key] = value

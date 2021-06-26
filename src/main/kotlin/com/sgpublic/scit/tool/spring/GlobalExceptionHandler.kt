@@ -3,6 +3,8 @@ package com.sgpublic.scit.tool.spring
 import com.sgpublic.scit.tool.Application
 import com.sgpublic.scit.tool.api.exceptions.InvalidSignException
 import com.sgpublic.scit.tool.api.result.FailedResult
+import okio.IOException
+import org.json.JSONException
 import org.springframework.beans.MethodInvocationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -56,6 +58,13 @@ class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(exception: Exception, request: HttpServletRequest): Map<String, Any> {
         return FailedResult.INTERNAL_SERVER_ERROR
+    }
+
+    /** 容错处理，服务器内部处理错误拦截 */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(IOException::class, JSONException::class)
+    fun handleIOException(): Map<String, Any> {
+        return FailedResult.SERVER_PROCESSING_ERROR
     }
 
     /**

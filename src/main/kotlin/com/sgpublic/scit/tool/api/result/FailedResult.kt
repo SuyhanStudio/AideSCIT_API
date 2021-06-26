@@ -18,5 +18,7 @@ class FailedResult(code: Int, message: String) : AdvanceMap(
         val UNSUPPORTED_REQUEST = FailedResult(-400, "不支持的请求方式")
         @JvmStatic
         val INTERNAL_SERVER_ERROR = FailedResult(-500, "服务器内部错误")
+        @JvmStatic
+        val SERVER_PROCESSING_ERROR = FailedResult(-500, "请求处理出错")
     }
 }

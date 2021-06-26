@@ -4,8 +4,14 @@ import com.sgpublic.scit.tool.api.util.ArgumentReader
 import com.sgpublic.scit.tool.api.util.Log
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Primary
+import javax.sql.DataSource
 
 @SpringBootApplication
 class Application {

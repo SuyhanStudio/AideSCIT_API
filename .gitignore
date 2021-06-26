@@ -1,4 +1,7 @@
 log/
+src/main/resources/mariadb.properties
+src/main/resources/application-dev.properties
+src/main/resources/application-pro.properties
 
 HELP.md
 .gradle
