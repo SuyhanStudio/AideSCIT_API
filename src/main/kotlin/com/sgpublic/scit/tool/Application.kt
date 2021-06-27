@@ -23,14 +23,28 @@ class Application {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            setup(args)
-            runApplication<Application>(*args)
+            val argsCurrent = setup(args)
+            runApplication<Application>(*argsCurrent)
         }
 
         /** 初始化参数 */
-        private fun setup(args: Array<String>){
+        private fun setup(args: Array<String>): Array<String> {
+            val argsCurrent = arrayListOf<String>()
+            argsCurrent.addAll(args)
             val reader = ArgumentReader(args)
             debug = reader.containsItem("--debug")
+            if (reader.getString("--spring.profiles.active", null) == null) {
+                val arg = StringBuilder("--spring.profiles.active=")
+                if (debug){
+                    arg.append("dev")
+                } else {
+                    arg.append("pro")
+                }
+                argsCurrent.add(arg.toString())
+            }
+            return Array(argsCurrent.size) {
+                return@Array argsCurrent[it]
+            }
         }
     }
 

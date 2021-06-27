@@ -12,10 +12,6 @@ import com.sgpublic.scit.tool.spring.logback.converter.UsernameConsoleConverter
  */
 class ConsolePatternLayout: PatternLayout() {
     companion object {
-        const val KEY_USERNAME = "username"
-        const val KEY_FILE_NAME = "fileName"
-        const val KEY_LINE_NUMBER = "lineNumber"
-
         init {
             defaultConverterMap["unc"] = UsernameConsoleConverter::class.java.name
             defaultConverterMap["unf"] = UsernameConverter::class.java.name
