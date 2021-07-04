@@ -3,6 +3,7 @@ package com.sgpublic.scit.tool.spring
 import com.sgpublic.scit.tool.Application
 import com.sgpublic.scit.tool.api.exceptions.InvalidSignException
 import com.sgpublic.scit.tool.api.result.FailedResult
+import com.sgpublic.scit.tool.api.util.Log
 import okio.IOException
 import org.json.JSONException
 import org.springframework.beans.MethodInvocationException
@@ -73,6 +74,7 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(Exception::class)
     fun handleException(exception: Exception, request: HttpServletRequest): Map<String, Any> {
+        Log.e("拦截错误，${exception.message}", exception)
         return FailedResult.INTERNAL_SERVER_ERROR
     }
 }

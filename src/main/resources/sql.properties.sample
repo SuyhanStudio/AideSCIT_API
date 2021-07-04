@@ -1,0 +1,9 @@
+# 设置数据库驱动
+scit.edutool.datasource.driver-class-name=org.mariadb.jdbc.Driver
+
+# 设置数据库链接 URL
+scit.edutool.datasource.url=jdbc:mariadb://localhost:3306/scit_edu_tool
+
+# 用户名及密码
+scit.edutool.datasource.username=
+scit.edutool.datasource.password=

@@ -37,7 +37,7 @@ class Hitokoto: Serializable {
     var reviewer: Long = 0L
 
     @Column(name = "h_insert_at")
-    var insertAt: Long = APIModule.ts
+    var insertAt: Long = APIModule.TS
 
     @Column(name = "h_length")
     var length: Long = 0L

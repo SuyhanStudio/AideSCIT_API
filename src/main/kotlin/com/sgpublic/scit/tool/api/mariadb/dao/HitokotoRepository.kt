@@ -18,15 +18,17 @@ interface HitokotoRepository: JpaRepository<Hitokoto, Long> {
     /**
      * 检查距离上次获取 hitokoto 是否超过所设置的间隔时间 [timeExpire]
      * @param time 间隔时间，使用此方法时请将此参数留空
-     * @return 返回查询结果 [List]，若此 List 长度不为 0 则未超过
+     * @return 返回未过期的 hitokoto 的 id，若不存在则返回 null
      */
     @Query("select `h_id` from `hitokoto` where `h_insert_at`>:time", nativeQuery = true)
-    fun tryGet(@Param("time") time: Long = APIModule.ts - timeExpire): List<Hitokoto>
+    fun tryGet(@Param("time") time: Long = APIModule.TS - timeExpire): Long?
 
     /**
      * 从数据库随机调取已保存的 hitokoto
-     * @return 返回查询结果 [List]，正常情况下此 List 长度应为 1
+     * @return 返回 [Hitokoto]
      */
-    @Query("select `h_content`,`h_from`,`h_length` from `hitokoto` where `h_id` >= (select FLOOR(RAND() * (select MAX(`h_id`) from `hitokoto`))) order by `h_id` limit 1", nativeQuery = true)
-    fun randGet(): List<Hitokoto>
+    @Query("select * from `hitokoto` where `h_id` >= (" +
+            "select FLOOR(RAND() * (select MAX(`h_id`) from `hitokoto`))" +
+            ") order by `h_id` limit 1", nativeQuery = true)
+    fun randGet(): Hitokoto
 }

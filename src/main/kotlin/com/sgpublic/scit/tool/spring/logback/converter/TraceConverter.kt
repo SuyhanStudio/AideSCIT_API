@@ -5,7 +5,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import com.sgpublic.scit.tool.api.util.Log
 import com.sgpublic.scit.tool.spring.logback.ConsolePatternLayout
 
-/** 日志定位 */
+/** 日志定位 trace */
 class TraceConverter: ClassicConverter() {
     override fun convert(event: ILoggingEvent): String {
         val judge = event.callerData[0].className.startsWith(Log::class.java.name)

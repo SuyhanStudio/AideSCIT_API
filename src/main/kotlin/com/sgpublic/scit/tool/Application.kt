@@ -1,19 +1,15 @@
 package com.sgpublic.scit.tool
 
 import com.sgpublic.scit.tool.api.util.ArgumentReader
-import com.sgpublic.scit.tool.api.util.Log
+import com.sgpublic.scit.tool.spring.CurrentConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Primary
-import javax.sql.DataSource
+import org.springframework.context.annotation.Import
 
 @SpringBootApplication
+@Import(CurrentConfig::class)
 class Application {
     companion object {
         private var debug = false

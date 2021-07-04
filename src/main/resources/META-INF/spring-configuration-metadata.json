@@ -1,0 +1,47 @@
+{
+  "properties": [
+    {
+      "name": "scit.edutool.token.token-key",
+      "type": "java.lang.String",
+      "description": "用于 Token 生成的 Key。"
+    },
+    {
+      "name": "scit.edutool.token.token-secret",
+      "type": "java.lang.String",
+      "description": "用于 Token 生成的 Secret。"
+    },
+    {
+      "name": "scit.edutool.token.access-expired",
+      "type": "java.lang.Long",
+      "description": "AccessToken 有效期，单位秒。",
+      "defaultValue": 2592000
+    },
+    {
+      "name": "scit.edutool.token.refresh-expired",
+      "type": "java.lang.Long",
+      "description": "RefreshToken 有效期，单位秒。",
+      "defaultValue": 124416000
+    },
+
+    {
+      "name": "scit.edutool.datasource.driver-class-name",
+      "type": "java.lang.Class",
+      "description": "JDBC 驱动全称。"
+    },
+    {
+      "name": "scit.edutool.datasource.url",
+      "type": "java.net.URL",
+      "description": "数据库的 JDBC 链接"
+    },
+    {
+      "name": "scit.edutool.datasource.username",
+      "type": "java.lang.String",
+      "description": "数据库用户名"
+    },
+    {
+      "name": "scit.edutool.datasource.password",
+      "type": "java.lang.String",
+      "description": "数据库密码"
+    }
+  ]
+}

@@ -25,6 +25,8 @@ dependencies {
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    // 配置文件处理
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // MariaDB 驱动
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     // JPA

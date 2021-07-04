@@ -1,5 +1,6 @@
 log/
-src/main/resources/mariadb.properties
+src/main/resources/token.properties
+src/main/resources/sql.properties
 src/main/resources/application-dev.properties
 src/main/resources/application-pro.properties
 

@@ -31,7 +31,7 @@ class APIModule private constructor(private val call: Call) {
 
         /** 获取当前时间戳 */
         @JvmStatic
-        val ts: Long get() = System.currentTimeMillis() / 1000
+        val TS: Long get() = System.currentTimeMillis() / 1000
 
         /**
          * 创建请求 [Call]

@@ -1,15 +1,20 @@
 package com.sgpublic.scit.tool.api.manager
 
 import com.sgpublic.scit.tool.api.exceptions.InvalidSignException
+import com.sgpublic.scit.tool.api.mariadb.dao.SignRepository
 import com.sgpublic.scit.tool.api.util.ArgumentReader
+import org.springframework.beans.factory.annotation.Autowired
 import java.security.MessageDigest
 
 object SignManager {
+    @Autowired
+    private lateinit var sign: SignRepository
+
     fun calculate(map: Map<String, Array<String>>){
-        val sortedMap = ArgumentReader.readRequestMap(map)
-        if (!sortedMap.containsKey("sign")){
+        if (!map.containsKey("sign")){
             return
         }
+        val sortedMap = ArgumentReader.readRequestMap(map)
         val string = StringBuilder()
         for ((key, value) in sortedMap) {
             if (string.isNotEmpty()){
@@ -19,8 +24,9 @@ object SignManager {
         }
 
         try {
-            val appSecret = getAppSecretWithAppKey(
-                (sortedMap["app_key"] ?: getDefaultAppKey()) as String
+            val appSecret = sign.getAppSecret(
+                (sortedMap["app_key"] ?: sign.getAppKey()) as String,
+                (sortedMap["platform"] ?: SignRepository.PLATFORM_WEB) as String
             )
             string.append(appSecret)
             val instance: MessageDigest = MessageDigest.getInstance("MD5")
@@ -30,13 +36,5 @@ object SignManager {
             }
         } catch (e: IndexOutOfBoundsException){ }
         throw InvalidSignException()
-    }
-
-    private fun getDefaultAppKey(): String {
-        return ""
-    }
-
-    private fun getAppSecretWithAppKey(appKey: String): String {
-        return ""
     }
 }
