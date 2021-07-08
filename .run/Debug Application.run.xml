@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Debug Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <module name="SCITEduTool_API.main" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.sgpublic.scit.tool.Application" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.sgpublic.aidescit.api.Application" />
     <option name="PROGRAM_PARAMETERS" value="--debug" />
     <option name="WORKING_DIRECTORY" value="file://bin" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />

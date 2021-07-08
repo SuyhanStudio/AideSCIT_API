@@ -1,9 +1,10 @@
-log/
+### 自定义配置文件 ###
 src/main/resources/token.properties
 src/main/resources/sql.properties
-src/main/resources/application-dev.properties
-src/main/resources/application-pro.properties
+# src/main/resources/application-dev.properties
+# src/main/resources/application-pro.properties
 
+### SpringBoot Project ###
 HELP.md
 .gradle
 build/

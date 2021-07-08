@@ -1,11 +1,11 @@
 # 生成 token 所需的 key，建议设置为 16 位 16 进制字符串
-scit.edutool.token-key=
+aidescit.token.token-key=
 
 # 生成 token 所需的 secret，建议设置为 32 位 16 进制字符串
-scit.edutool.token-secret=
+aidescit.token.token-secret=
 
 # 设置 AccessToken 过期时间，单位：秒，默认：2592000（30天）
-scit.edutool.access-expired=
+aidescit.token.access-expired=
 
 # 设置 RefreshToken 过期时间，单位：秒，默认：124416000（4年）
-scit.edutool.refresh-expired=
+aidescit.token.refresh-expired=
