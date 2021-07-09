@@ -41,7 +41,13 @@
     {
       "name": "aidescit.datasource.password",
       "type": "java.lang.String",
-      "description": "数据库密码"
+      "description": "数据库密码，请设置为经 Base64 加密后的内容"
+    },
+
+    {
+      "name": "aidescit.rsa.private",
+      "type": "java.lang.String",
+      "description": "RSA 加密私钥设置，请设置为经 Base64 加密后的内容"
     }
   ]
 }
