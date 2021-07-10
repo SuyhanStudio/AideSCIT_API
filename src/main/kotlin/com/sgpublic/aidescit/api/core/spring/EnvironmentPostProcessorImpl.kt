@@ -16,6 +16,7 @@ class EnvironmentPostProcessorImpl: EnvironmentPostProcessor {
     companion object {
         /** 自定义配置文件列表 */
         private val PROFILES = arrayOf(
+            "key.properties",
             "sql.properties",
             "token.properties"
         )

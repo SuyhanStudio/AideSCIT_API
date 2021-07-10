@@ -1,14 +1,14 @@
 package com.sgpublic.aidescit.api.mariadb.dao
 
-import com.sgpublic.aidescit.api.mariadb.domain.Hitokoto
+import com.sgpublic.aidescit.api.mariadb.domain.SignKeys
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
-/** 数据表 sign 操作 */
+/** 数据表 sign_keys 操作 */
 @Repository
-interface SignRepository: JpaRepository<Hitokoto, Long> {
+interface SignKeysRepository: JpaRepository<SignKeys, String> {
     companion object {
         const val PLATFORM_WEB = "web"
         const val PLATFORM_ANDROID = "android"

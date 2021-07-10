@@ -54,8 +54,8 @@ object APIModule {
             } else if (method == METHOD_POST){
                 request.post(it)
             }
-            request.url(urlFinal.toString())
         }
+        request.url(urlFinal.toString())
         headers?.let {
             request.headers(it)
         }

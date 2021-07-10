@@ -1,9 +1,11 @@
 package com.sgpublic.aidescit.api.core.spring
 
 import com.sgpublic.aidescit.api.Application
-import com.sgpublic.aidescit.api.exceptions.InvalidSignException
-import com.sgpublic.aidescit.api.result.FailedResult
 import com.sgpublic.aidescit.api.core.util.Log
+import com.sgpublic.aidescit.api.exceptions.InvalidSignException
+import com.sgpublic.aidescit.api.exceptions.ServiceExpiredException
+import com.sgpublic.aidescit.api.exceptions.WrongPasswordException
+import com.sgpublic.aidescit.api.result.FailedResult
 import okio.IOException
 import org.json.JSONException
 import org.springframework.http.HttpStatus
@@ -42,11 +44,30 @@ class GlobalExceptionHandler {
     }
 
     /**
+     * 服务请求过期拦截
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(ServiceExpiredException::class)
+    fun handleServiceExpiredException(): Map<String, Any>{
+        return FailedResult.SERVICE_EXPIRED
+    }
+
+    /**
+     * 用户密码错误拦截
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(WrongPasswordException::class)
+    fun handleWrongPasswordException(): Map<String, Any>{
+        return FailedResult.WRONG_ACCOUNT
+    }
+
+
+    /**
      * 容错处理，参数解析失败错误拦截
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun handleHttpMessageNotReadableException(exception: Exception, request: HttpServletRequest): Map<String, Any> {
+    fun handleHttpMessageNotReadableException(): Map<String, Any> {
         return FailedResult.INTERNAL_SERVER_ERROR
     }
 
@@ -55,14 +76,15 @@ class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(exception: Exception, request: HttpServletRequest): Map<String, Any> {
+    fun handleMethodArgumentNotValidException(): Map<String, Any> {
         return FailedResult.INTERNAL_SERVER_ERROR
     }
 
     /** 容错处理，服务器内部处理错误拦截 */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(IOException::class, JSONException::class)
-    fun handleIOException(): Map<String, Any> {
+    fun handleIOException(e: Exception): Map<String, Any> {
+        Log.d("拦截错误，${e.message}", e)
         return FailedResult.SERVER_PROCESSING_ERROR
     }
 
@@ -71,8 +93,8 @@ class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(Exception::class)
-    fun handleException(exception: Exception, request: HttpServletRequest): Map<String, Any> {
-        Log.e("拦截错误，${exception.message}", exception)
+    fun handleException(e: Exception, request: HttpServletRequest): Map<String, Any> {
+        Log.e("拦截错误，${e.message}", e)
         return FailedResult.INTERNAL_SERVER_ERROR
     }
 }

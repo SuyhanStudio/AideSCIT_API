@@ -4,6 +4,9 @@ import com.sgpublic.aidescit.api.module.APIModule
 import java.io.Serializable
 import javax.persistence.*
 
+/**
+ * 数据表 hitokoto
+ */
 @Entity
 @Table(name = "hitokoto")
 class Hitokoto: Serializable {

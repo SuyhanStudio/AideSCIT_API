@@ -1,9 +1,11 @@
 package com.sgpublic.aidescit.api.core.spring.property
 
-import com.sgpublic.aidescit.api.core.util.Log
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 
+/**
+ * 注入 token.properties
+ */
 @Component
 @ConfigurationProperties(prefix = "aidescit.token")
 class TokenProperty {
@@ -12,7 +14,6 @@ class TokenProperty {
         private lateinit var tokenSecret: String
         private var accessExpired: Long = 2592000
         private var refreshExpired: Long = 124416000
-
 
         @JvmStatic
         val TOKEN_KEY: String get() = tokenKey

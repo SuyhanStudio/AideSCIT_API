@@ -1,2 +1,11 @@
-# RSA 加密私钥设置
+# RSA 私钥设置
+#-----BEGIN RSA PRIVATE KEY-----
+#           ......
+#-----END RSA PRIVATE KEY-----
 aidescit.rsa.private=
+
+# RSA 公钥设置
+#-----BEGIN PUBLIC KEY-----
+#           ......
+#-----END PUBLIC KEY-----
+aidescit.rsa.public=

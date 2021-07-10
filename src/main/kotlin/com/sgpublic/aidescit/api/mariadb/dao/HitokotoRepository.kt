@@ -17,7 +17,7 @@ interface HitokotoRepository: JpaRepository<Hitokoto, Long> {
 
     /**
      * 检查距离上次获取 hitokoto 是否超过所设置的间隔时间 [timeExpire]
-     * @param time 间隔时间，使用此方法时请将此参数留空
+     * @param time 间隔时间
      * @return 返回未过期的 hitokoto 的 id，若不存在则返回 null
      */
     @Query("select `h_id` from `hitokoto` where `h_insert_at`>:time", nativeQuery = true)

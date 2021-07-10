@@ -1,10 +1,13 @@
 package com.sgpublic.aidescit.api.core.spring.property
 
+import com.sgpublic.aidescit.api.core.util.Base64Util
 import com.sgpublic.aidescit.api.core.util.Log
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 
+/**
+ * 注入 sql.properties
+ */
 @Component
 @ConfigurationProperties(prefix = "aidescit.datasource")
 class SqlProperty {
@@ -37,6 +40,10 @@ class SqlProperty {
     }
 
     fun setPassword(value: String) {
-        passwordSetter = value
+        try {
+            passwordSetter = Base64Util.decodeToString(value)
+        } catch (e: Exception){
+            Log.f("请将 aidescit.datasource.password 设置为经 Base64 加密后的字符串")
+        }
     }
 }

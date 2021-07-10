@@ -15,7 +15,11 @@ class FailedResult(code: Int, message: String) : AdvanceMap(
         @JvmStatic
         val INVALID_SIGN = FailedResult(-400, "服务签名错误")
         @JvmStatic
+        val SERVICE_EXPIRED = FailedResult(-400, "服务请求过期")
+        @JvmStatic
         val UNSUPPORTED_REQUEST = FailedResult(-400, "不支持的请求方式")
+        @JvmStatic
+        val WRONG_ACCOUNT = FailedResult(-401, "账号或密码错误")
         @JvmStatic
         val INTERNAL_SERVER_ERROR = FailedResult(-500, "服务器内部错误")
         @JvmStatic

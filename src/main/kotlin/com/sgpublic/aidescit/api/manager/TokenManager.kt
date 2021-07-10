@@ -8,8 +8,10 @@ import com.sgpublic.aidescit.api.core.util.RSAUtil
 import com.sgpublic.aidescit.api.data.TokenPair
 import com.sgpublic.aidescit.api.exceptions.InvalidPasswordFormatException
 import com.sgpublic.aidescit.api.exceptions.InvalidRefreshTokenException
+import com.sgpublic.aidescit.api.mariadb.dao.UserTokenRepository
 import com.sgpublic.aidescit.api.module.APIModule
 import org.json.JSONObject
+import org.springframework.beans.factory.annotation.Autowired
 
 /**
  * token 管理，支持生成和检查与刷新 token
@@ -20,6 +22,9 @@ class TokenManager private constructor(private val token: TokenPair){
     private var tokenCreateTime: Long = 0
     private var accessTokenActive: Boolean = false
     private var refreshTokenActive: Boolean = false
+
+    @Autowired
+    private lateinit var userToken: UserTokenRepository
 
     /**
      * access_token 是否有效，忽略其时效性
@@ -105,8 +110,8 @@ class TokenManager private constructor(private val token: TokenPair){
                 return result
             }
             result.username = header[0]
-            val manager = SessionManager(result.username)
-            result.password = RSAUtil.decode(manager.getUserPassword()).apply {
+            val password = result.userToken.getUserPassword(result.username)
+            result.password = RSAUtil.decode(password).apply {
                 if (length <= 8){
                     Log.d("用户密码解析错误")
                     return result

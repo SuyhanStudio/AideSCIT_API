@@ -47,7 +47,12 @@
     {
       "name": "aidescit.rsa.private",
       "type": "java.lang.String",
-      "description": "RSA 加密私钥设置，请设置为经 Base64 加密后的内容"
+      "description": "RSA 私钥设置，仅支持 RSA/ECB/PKCS8Padding，请设置为经 Base64 加密后的内容"
+    },
+    {
+      "name": "aidescit.rsa.public",
+      "type": "java.lang.String",
+      "description": "RSA 共钥设置，仅支持 RSA/ECB/PKCS8Padding，请设置为经 Base64 加密后的内容"
     }
   ]
 }

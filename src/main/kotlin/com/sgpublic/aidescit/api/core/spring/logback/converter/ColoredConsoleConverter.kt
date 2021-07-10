@@ -1,4 +1,4 @@
-package com.sgpublic.aidescit.api.core.spring.logback
+package com.sgpublic.aidescit.api.core.spring.logback.converter
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.spi.ILoggingEvent

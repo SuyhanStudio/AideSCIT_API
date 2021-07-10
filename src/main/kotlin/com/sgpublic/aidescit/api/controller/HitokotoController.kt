@@ -11,7 +11,7 @@ class HitokotoController {
     @Autowired
     lateinit var hitokoto: HitokotoModule
 
-    @RequestMapping("/scit/edutool/hitokoto")
+    @RequestMapping("/aidescit/hitokoto")
     fun getHitokoto(): Map<String, Any>{
         val hitokoto = this.hitokoto.get()
         return SuccessResult(

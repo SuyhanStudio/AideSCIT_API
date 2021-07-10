@@ -6,8 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
-import org.springframework.context.ApplicationContextInitializer
-import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.Import
 
 fun main(args: Array<String>) {
@@ -28,7 +26,10 @@ class Application {
 
 class ServletInitializer : SpringBootServletInitializer() {
     override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {
-        return application.sources(Application::class.java)
+        return application.apply {
+            lazyInitialization(true)
+            sources(Application::class.java)
+        }
     }
 }
 
