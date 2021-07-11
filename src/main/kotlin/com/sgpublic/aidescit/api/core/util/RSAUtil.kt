@@ -10,10 +10,10 @@ import javax.crypto.Cipher
 @DependsOn("keyProperty")
 object RSAUtil {
     @JvmStatic
-    private val cp: Cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
-
-    init {
+    private val cp: Cipher get() {
+        val cp = Cipher.getInstance("RSA/ECB/PKCS1Padding")
         cp.init(Cipher.DECRYPT_MODE, KeyProperty.PRIVATE_KEY)
+        return cp
     }
 
     /**
@@ -22,6 +22,6 @@ object RSAUtil {
      * @return 返回解密的文本
      */
     fun decode(src: String): String {
-        return cp.doFinal(src.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8)
+        return cp.doFinal(Base64Util.decode(src)).toString(Charsets.UTF_8)
     }
 }

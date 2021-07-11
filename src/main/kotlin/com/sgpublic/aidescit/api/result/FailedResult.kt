@@ -7,7 +7,7 @@ import com.sgpublic.aidescit.api.core.util.AdvanceMap
  * @param code 错误码
  * @param message 错误说明
  */
-class FailedResult(code: Int, message: String) : AdvanceMap(
+class FailedResult(code: Int, message: String): AdvanceMap(
     "code" to code,
     "message" to message
 ) {

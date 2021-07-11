@@ -12,7 +12,7 @@ class PublicKeyController {
     @Autowired
     private lateinit var public: PublicKeyModule
 
-    @RequestMapping("/aidescit/key")
+    @RequestMapping("/aidescit/public_key")
     fun getKey(): Map<String, Any>{
         val hash = StringBuilder().apply {
             for (i in 0 until 8){

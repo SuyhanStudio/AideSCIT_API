@@ -1,14 +1,10 @@
-package com.sgpublic.aidescit.api.manager
+package com.sgpublic.aidescit.api.core.util
 
 import com.sgpublic.aidescit.api.core.spring.property.TokenProperty
-import com.sgpublic.aidescit.api.core.util.Base64Util
-import com.sgpublic.aidescit.api.core.util.Log
-import com.sgpublic.aidescit.api.core.util.MD5Util
-import com.sgpublic.aidescit.api.core.util.RSAUtil
 import com.sgpublic.aidescit.api.data.TokenPair
 import com.sgpublic.aidescit.api.exceptions.InvalidPasswordFormatException
 import com.sgpublic.aidescit.api.exceptions.InvalidRefreshTokenException
-import com.sgpublic.aidescit.api.mariadb.dao.UserTokenRepository
+import com.sgpublic.aidescit.api.mariadb.dao.UserSessionRepository
 import com.sgpublic.aidescit.api.module.APIModule
 import org.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 /**
  * token 管理，支持生成和检查与刷新 token
  */
-class TokenManager private constructor(private val token: TokenPair){
+class TokenUtil private constructor(private val token: TokenPair){
     private var username: String = ""
     private var password: String = ""
     private var tokenCreateTime: Long = 0
@@ -24,7 +20,7 @@ class TokenManager private constructor(private val token: TokenPair){
     private var refreshTokenActive: Boolean = false
 
     @Autowired
-    private lateinit var userToken: UserTokenRepository
+    private lateinit var userSession: UserSessionRepository
 
     /**
      * access_token 是否有效，忽略其时效性
@@ -88,11 +84,11 @@ class TokenManager private constructor(private val token: TokenPair){
         /**
          * 开始 token 检查
          * @param token 欲检查的 token 对，若想检查 refresh_token 是否有效必须保证 access_token 不为空
-         * @return 返回 [TokenManager]
+         * @return 返回 [TokenUtil]
          */
         @JvmStatic
-        fun startVerify(token: TokenPair): TokenManager {
-            val result = TokenManager(token)
+        fun startVerify(token: TokenPair): TokenUtil {
+            val result = TokenUtil(token)
             if (token.access == ""){
                 Log.d("access_token 为空")
                 return result
@@ -110,7 +106,7 @@ class TokenManager private constructor(private val token: TokenPair){
                 return result
             }
             result.username = header[0]
-            val password = result.userToken.getUserPassword(result.username)
+            val password = result.userSession.getUserPassword(result.username)
             result.password = RSAUtil.decode(password).apply {
                 if (length <= 8){
                     Log.d("用户密码解析错误")
@@ -166,7 +162,7 @@ class TokenManager private constructor(private val token: TokenPair){
         /**
          * 生成 token 对
          * @param username 用户名
-         * @param password 用户不含盐的明文密码
+         * @param password 用户加盐密文密码
          * @return 返回 [TokenPair]
          */
         @JvmStatic
@@ -196,7 +192,7 @@ class TokenManager private constructor(private val token: TokenPair){
             val refreshBodyPre = bodyPre.apply {
                 put("type", "refresh")
             }.toString()
-            token.access = "${MD5Util.encode(accessBodyPre)}.${token.access}"
+            token.access = "${MD5Util.encode(accessBodyPre)}.$header."
             token.refresh = "${MD5Util.encode(refreshBodyPre)}."
 
             val accessFooterPre = "${token.access}${TokenProperty.TOKEN_SECRET}"

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
  * 数据表 user_token 操作
  */
 @Repository
-interface UserTokenRepository: JpaRepository<UserSession, String> {
+interface UserSessionRepository: JpaRepository<UserSession, String> {
     /**
      * 获取用户密码
      * @param id 用户学号/工号

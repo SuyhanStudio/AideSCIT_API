@@ -39,8 +39,14 @@ object APIModule {
      */
     @JvmStatic
     fun buildRequest(url: String, body: FormBody? = null, headers: Headers? = null,
-                     cookies: Cookies? = null, method: Int = METHOD_POST): Call {
+                     cookies: Cookies? = null, method: Int = METHOD_GET): Call {
         val request = Request.Builder()
+        headers?.let {
+            request.headers(it)
+        }
+        cookies?.let {
+            request.addHeader("Cookie", it.toString())
+        }
         val urlFinal = StringBuilder(url)
         body?.let {
             if (method == METHOD_GET){
@@ -53,15 +59,10 @@ object APIModule {
                 }
             } else if (method == METHOD_POST){
                 request.post(it)
+                request.addHeader("Content-Type", "application/x-www-form-urlencoded")
             }
         }
         request.url(urlFinal.toString())
-        headers?.let {
-            request.headers(it)
-        }
-        cookies?.let {
-            request.addHeader("Cookie", it.toString())
-        }
         return client.newCall(request.build())
     }
 

@@ -2,7 +2,7 @@ package com.sgpublic.aidescit.api.core
 
 class Cookies private constructor(private val cookies: Map<String, ArrayList<Any>>){
     override fun toString(): String {
-        return StringBuilder().run {
+        return StringBuilder().apply {
             for ((key, values) in cookies){
                 for (value in values) {
                     append("$key=$value; ")
@@ -11,7 +11,7 @@ class Cookies private constructor(private val cookies: Map<String, ArrayList<Any
         }.toString()
     }
 
-    class Builder() {
+    class Builder {
         private val cookies: MutableMap<String, ArrayList<Any>> = mutableMapOf()
 
         fun add(key: String, value: Any){

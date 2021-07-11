@@ -1,6 +1,5 @@
-package com.sgpublic.aidescit.api.manager
+package com.sgpublic.aidescit.api.core.util
 
-import com.sgpublic.aidescit.api.core.util.ArgumentReader
 import com.sgpublic.aidescit.api.exceptions.InvalidSignException
 import com.sgpublic.aidescit.api.exceptions.ServiceExpiredException
 import com.sgpublic.aidescit.api.mariadb.dao.SignKeysRepository
@@ -9,7 +8,7 @@ import okhttp3.internal.toLongOrDefault
 import org.springframework.beans.factory.annotation.Autowired
 import java.security.MessageDigest
 
-object SignManager {
+object SignUtil {
     @Autowired
     private lateinit var sign: SignKeysRepository
 
