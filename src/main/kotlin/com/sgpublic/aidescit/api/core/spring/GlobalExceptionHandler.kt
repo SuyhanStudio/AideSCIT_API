@@ -2,9 +2,7 @@ package com.sgpublic.aidescit.api.core.spring
 
 import com.sgpublic.aidescit.api.Application
 import com.sgpublic.aidescit.api.core.util.Log
-import com.sgpublic.aidescit.api.exceptions.InvalidSignException
-import com.sgpublic.aidescit.api.exceptions.ServiceExpiredException
-import com.sgpublic.aidescit.api.exceptions.WrongPasswordException
+import com.sgpublic.aidescit.api.exceptions.*
 import com.sgpublic.aidescit.api.result.FailedResult
 import okio.IOException
 import org.json.JSONException
@@ -61,6 +59,15 @@ class GlobalExceptionHandler {
         return FailedResult.WRONG_ACCOUNT
     }
 
+    /**
+     * 无效的 token 拦截
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(TokenExpiredException::class)
+    fun handleTokenExpiredException(): Map<String, Any>{
+        return FailedResult.EXPIRED_TOKEN
+    }
+
 
     /**
      * 容错处理，参数解析失败错误拦截
@@ -78,6 +85,13 @@ class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(): Map<String, Any> {
         return FailedResult.INTERNAL_SERVER_ERROR
+    }
+
+    /** 服务器非自身导致错误拦截 */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(ServerRuntimeException::class)
+    fun handleServerRuntimeException(e: Exception): Map<String, Any> {
+        return FailedResult.SERVER_PROCESSING_ERROR
     }
 
     /** 容错处理，服务器内部处理错误拦截 */

@@ -28,8 +28,8 @@ object Log {
      * @param message 日志信息
      */
     @JvmStatic
-    fun t(message: String){
-        logger.trace(message)
+    fun t(message: Any){
+        logger.trace(message.toString())
     }
 
     /**
@@ -38,8 +38,8 @@ object Log {
      * @param username 产生日志用户的用户名
      */
     @JvmStatic
-    fun t(message: String, username: String){
-        logger.trace(marker(username), message)
+    fun t(message: Any, username: String){
+        logger.trace(marker(username), message.toString())
     }
 
     /**
@@ -47,8 +47,8 @@ object Log {
      * @param message 日志信息
      */
     @JvmStatic
-    fun d(message: String){
-        logger.debug(message)
+    fun d(message: Any){
+        logger.debug(message.toString())
     }
 
     /**
@@ -57,8 +57,8 @@ object Log {
      * @param username 产生日志用户的用户名
      */
     @JvmStatic
-    fun d(message: String, username: String){
-        logger.debug(marker(username), message)
+    fun d(message: Any, username: String){
+        logger.debug(marker(username), message.toString())
     }
 
     /**
@@ -67,8 +67,8 @@ object Log {
      * @param throwable 日志附带的异常堆栈信息
      */
     @JvmStatic
-    fun d(message: String, throwable: Throwable){
-        logger.debug(message, throwable)
+    fun d(message: Any, throwable: Throwable){
+        logger.debug(message.toString(), throwable)
     }
 
     /**
@@ -78,8 +78,8 @@ object Log {
      * @param throwable 日志附带的异常堆栈信息
      */
     @JvmStatic
-    fun d(message: String, username: String, throwable: Throwable){
-        logger.debug(marker(username), message, throwable)
+    fun d(message: Any, username: String, throwable: Throwable){
+        logger.debug(marker(username), message.toString(), throwable)
     }
 
     /**
@@ -87,8 +87,8 @@ object Log {
      * @param message 日志信息
      */
     @JvmStatic
-    fun i(message: String){
-        logger.info(message)
+    fun i(message: Any){
+        logger.info(message.toString())
     }
 
     /**
@@ -97,8 +97,8 @@ object Log {
      * @param username 产生日志用户的用户名
      */
     @JvmStatic
-    fun i(message: String, username: String){
-        logger.info(marker(username), message)
+    fun i(message: Any, username: String){
+        logger.info(marker(username), message.toString())
     }
 
     /**
@@ -106,8 +106,8 @@ object Log {
      * @param message 日志信息
      */
     @JvmStatic
-    fun w(message: String){
-        logger.warn(message)
+    fun w(message: Any){
+        logger.warn(message.toString())
     }
 
     /**
@@ -116,8 +116,8 @@ object Log {
      * @param username 产生日志用户的用户名
      */
     @JvmStatic
-    fun w(message: String, username: String){
-        logger.warn(marker(username), message)
+    fun w(message: Any, username: String){
+        logger.warn(marker(username), message.toString())
     }
 
     /**
@@ -126,8 +126,8 @@ object Log {
      * @param throwable 日志附带的异常堆栈信息
      */
     @JvmStatic
-    fun w(message: String, throwable: Throwable){
-        logger.warn(message, throwable)
+    fun w(message: Any, throwable: Throwable){
+        logger.warn(message.toString(), throwable)
     }
 
     /**
@@ -137,8 +137,8 @@ object Log {
      * @param throwable 日志附带的异常堆栈信息
      */
     @JvmStatic
-    fun w(message: String, username: String, throwable: Throwable){
-        logger.warn(marker(username), message, throwable)
+    fun w(message: Any, username: String, throwable: Throwable){
+        logger.warn(marker(username), message.toString(), throwable)
     }
 
     /**
@@ -146,8 +146,8 @@ object Log {
      * @param message 日志信息
      */
     @JvmStatic
-    fun e(message: String){
-        logger.error(message)
+    fun e(message: Any){
+        logger.error(message.toString())
     }
 
     /**
@@ -156,8 +156,8 @@ object Log {
      * @param username 产生日志用户的用户名
      */
     @JvmStatic
-    fun e(message: String, username: String){
-        logger.warn(marker(username), message)
+    fun e(message: Any, username: String){
+        logger.warn(marker(username), message.toString())
     }
 
     /**
@@ -166,8 +166,8 @@ object Log {
      * @param throwable 日志附带的异常堆栈信息
      */
     @JvmStatic
-    fun e(message: String, throwable: Throwable){
-        logger.warn(message, throwable)
+    fun e(message: Any, throwable: Throwable){
+        logger.warn(message.toString(), throwable)
     }
 
     /**
@@ -177,8 +177,8 @@ object Log {
      * @param throwable 日志附带的异常堆栈信息
      */
     @JvmStatic
-    fun e(message: String, username: String, throwable: Throwable){
-        logger.warn(marker(username), message, throwable)
+    fun e(message: Any, username: String, throwable: Throwable){
+        logger.warn(marker(username), message.toString(), throwable)
     }
 
     /**
@@ -186,8 +186,8 @@ object Log {
      * @param message 日志信息
      */
     @JvmStatic
-    fun f(message: String){
-        logger.error(message)
+    fun f(message: Any){
+        logger.error(message.toString())
         exitProcess(0)
     }
 
@@ -197,8 +197,8 @@ object Log {
      * @param username 产生日志用户的用户名
      */
     @JvmStatic
-    fun f(message: String, username: String){
-        logger.warn(marker(username), message)
+    fun f(message: Any, username: String){
+        logger.warn(marker(username), message.toString())
         exitProcess(0)
     }
 
@@ -208,8 +208,8 @@ object Log {
      * @param throwable 日志附带的异常堆栈信息
      */
     @JvmStatic
-    fun f(message: String, throwable: Throwable){
-        logger.warn(message, throwable)
+    fun f(message: Any, throwable: Throwable){
+        logger.warn(message.toString(), throwable)
         exitProcess(0)
     }
 
@@ -220,8 +220,8 @@ object Log {
      * @param throwable 日志附带的异常堆栈信息
      */
     @JvmStatic
-    fun f(message: String, username: String, throwable: Throwable){
-        logger.warn(marker(username), message, throwable)
+    fun f(message: Any, username: String, throwable: Throwable){
+        logger.warn(marker(username), message.toString(), throwable)
         exitProcess(0)
     }
 }

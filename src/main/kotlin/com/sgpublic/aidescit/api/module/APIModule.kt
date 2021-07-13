@@ -1,7 +1,13 @@
 package com.sgpublic.aidescit.api.module
 
+import com.sgpublic.aidescit.api.core.AdvJSONObject
 import com.sgpublic.aidescit.api.core.Cookies
+import com.sgpublic.aidescit.api.data.ViewstateDocument
+import com.sgpublic.aidescit.api.exceptions.ServerRuntimeException
 import okhttp3.*
+import okio.IOException
+import org.json.JSONObject
+import org.jsoup.Jsoup
 import java.util.concurrent.TimeUnit
 
 /** 请求操作模块 */
@@ -24,22 +30,33 @@ object APIModule {
     @JvmStatic
     val METHOD_POST: Int = 1
 
+    /**
+     * 请求附带 cookie 键
+     */
+    @JvmStatic
+    val COOKIE_KEY: String = "ASP.NET_SessionId"
+
     /** 获取当前时间戳 */
     @JvmStatic
     val TS: Long get() = System.currentTimeMillis() / 1000
 
+//    private var currentResponse: Response? = null
+
     /**
-     * 创建请求 [Call]
+     * 创建请求并执行
      * @param url 请求地址
      * @param body 请求表单，若留空则强制使用 GET 请求
      * @param headers 附带请求头，可空
      * @param cookies 附带 Cookie，可空
      * @param method 请求方法，留空则默认选择 POST 请求
-     * @return 返回 [Call]
+     * @return 返回 [Response]
+     * @throws IOException if the request could not be executed due to cancellation, a connectivity problem or timeout. Because networks can fail during an exchange, it is possible that the remote server accepted the request before the failure.
+     * @throws IllegalStateException when the call has already been executed.
      */
     @JvmStatic
-    fun buildRequest(url: String, body: FormBody? = null, headers: Headers? = null,
-                     cookies: Cookies? = null, method: Int = METHOD_GET): Call {
+    @Throws(IOException::class, IllegalStateException::class)
+    fun executeResponse(url: String, body: FormBody? = null, headers: Headers? = null,
+                        cookies: Cookies? = null, method: Int = METHOD_GET): Response {
         val request = Request.Builder()
         headers?.let {
             request.headers(it)
@@ -63,7 +80,48 @@ object APIModule {
             }
         }
         request.url(urlFinal.toString())
-        return client.newCall(request.build())
+        client.newCall(request.build()).execute().let {
+//            currentResponse?.close()
+//            currentResponse = it
+            return it
+        }
+    }
+
+    /**
+     * 创建请求并执行，返回 [ViewstateDocument]，可选检查 __VIEWSTATE
+     * @see APIModule.executeResponse
+     * @return 返回 [ViewstateDocument]
+     * @throws ServerRuntimeException 当网络请求失败或检查 __VIEWSTATE 未发现时抛出。
+     */
+    @Throws(IOException::class, IllegalStateException::class, ServerRuntimeException::class)
+    fun executeDocument(url: String, body: FormBody? = null, headers: Headers? = null,
+                        cookies: Cookies? = null, method: Int = METHOD_GET,
+                        checkViewstate: Boolean = true): ViewstateDocument {
+        return executeResponse(url, body, headers, cookies, method).body?.string()?.run {
+            val doc = Jsoup.parse(this)
+            if (!checkViewstate){
+                return@run ViewstateDocument(doc)
+            }
+            val viewstate = doc.select("#__VIEWSTATE").attr("value")
+            if (viewstate == ""){
+                throw ServerRuntimeException.VIEWSTATE_NOT_FOUND
+            }
+            return@run ViewstateDocument(doc, viewstate)
+        } ?: throw ServerRuntimeException.NETWORK_FAILED
+    }
+
+    /**
+     * 创建请求并执行，返回 [JSONObject]
+     * @see APIModule.executeResponse
+     * @return 返回 [JSONObject]
+     * @throws ServerRuntimeException 当网络请求失败时抛出。
+     */
+    @Throws(IOException::class, IllegalStateException::class, ServerRuntimeException::class)
+    fun executeJSONObject(url: String, body: FormBody? = null, headers: Headers? = null,
+                        cookies: Cookies? = null, method: Int = METHOD_GET): AdvJSONObject {
+        return executeResponse(url, body, headers, cookies, method).body?.string()?.run {
+            return@run AdvJSONObject(this)
+        } ?: throw ServerRuntimeException.NETWORK_FAILED
     }
 
     /**

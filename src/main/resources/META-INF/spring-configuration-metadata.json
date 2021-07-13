@@ -52,7 +52,29 @@
     {
       "name": "aidescit.rsa.public",
       "type": "java.lang.String",
-      "description": "RSA 共钥设置，仅支持 RSA/ECB/PKCS8Padding，请设置为经 Base64 加密后的内容"
+      "description": "RSA 共钥设置，请设置为经 Base64 加密后的内容"
+    },
+
+    {
+      "name": "aidescit.semester.num",
+      "type": "java.lang.Short",
+      "description": "当前学期编号"
+    },
+    {
+      "name": "aidescit.semester.year",
+      "type": "java.lang.String",
+      "description": "当前学年"
+    },
+    {
+      "name": "aidescit.semester.evaluation",
+      "type": "java.lang.Boolean",
+      "description": "当前学期教评是否开始",
+      "default": false
+    },
+    {
+      "name": "aidescit.semester.start",
+      "type": "java.util.String",
+      "description": "当前学期开学日期，请填写如下格式的日期：YYYY/MM/dd"
     }
   ]
 }

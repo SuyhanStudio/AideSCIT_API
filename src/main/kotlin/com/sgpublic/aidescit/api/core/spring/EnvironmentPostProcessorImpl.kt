@@ -18,7 +18,8 @@ class EnvironmentPostProcessorImpl: EnvironmentPostProcessor {
         private val PROFILES = arrayOf(
             "key.properties",
             "sql.properties",
-            "token.properties"
+            "token.properties",
+            "semester.properties"
         )
     }
 

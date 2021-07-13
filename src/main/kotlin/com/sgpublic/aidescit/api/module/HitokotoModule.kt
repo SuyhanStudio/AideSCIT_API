@@ -1,9 +1,7 @@
 package com.sgpublic.aidescit.api.module
 
-import com.sgpublic.aidescit.api.core.NullableJSONObject
 import com.sgpublic.aidescit.api.mariadb.dao.HitokotoRepository
 import com.sgpublic.aidescit.api.mariadb.domain.Hitokoto
-import okio.IOException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -30,16 +28,15 @@ class HitokotoModule {
      * 从 v1.hitokoto.cn 获取新的 hitokoto
      */
     private fun refresh(): Hitokoto {
-        val response = APIModule.buildRequest(
+        val json = APIModule.executeJSONObject(
             url = "https://v1.hitokoto.cn/",
             body = APIModule.buildFormBody(
                 "encode" to "json"
             ),
             method = APIModule.METHOD_GET
-        ).execute().body?.string() ?: throw IOException("请求处理出错")
+        )
 
         try {
-            val json = NullableJSONObject(response)
             val result = Hitokoto()
             result.index = json.getLong("id")
             result.content = json.getString("hitokoto")

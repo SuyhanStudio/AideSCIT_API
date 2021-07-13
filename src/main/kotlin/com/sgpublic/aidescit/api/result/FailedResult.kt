@@ -21,6 +21,8 @@ class FailedResult(code: Int, message: String): AdvanceMap(
         @JvmStatic
         val WRONG_ACCOUNT = FailedResult(-401, "账号或密码错误")
         @JvmStatic
+        val EXPIRED_TOKEN = FailedResult(-401, "无效的 token")
+        @JvmStatic
         val INTERNAL_SERVER_ERROR = FailedResult(-500, "服务器内部错误")
         @JvmStatic
         val SERVER_PROCESSING_ERROR = FailedResult(-500, "请求处理出错")

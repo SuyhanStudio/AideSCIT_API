@@ -17,12 +17,12 @@ import kotlin.system.exitProcess
 @ConfigurationProperties(prefix = "aidescit.rsa")
 class KeyProperty {
     companion object {
-        private lateinit var privateKeySetter: PrivateKey
-        private lateinit var publicKeySetter: String
+        private lateinit var privateKey: PrivateKey
+        private lateinit var publicKey: String
 
         @JvmStatic
-        val PRIVATE_KEY: PrivateKey get() = privateKeySetter
-        val PUBLIC_KEY: String get() = publicKeySetter
+        val PRIVATE_KEY: PrivateKey get() = privateKey
+        val PUBLIC_KEY: String get() = publicKey
     }
 
     fun setPrivate(value: String){
@@ -33,7 +33,7 @@ class KeyProperty {
                 return@run Base64Util.decode(str)
             }
             val key = KeyFactory.getInstance("RSA")
-            privateKeySetter = key.generatePrivate(PKCS8EncodedKeySpec(decoded))
+            privateKey = key.generatePrivate(PKCS8EncodedKeySpec(decoded))
             return
         } catch (e: IllegalArgumentException){
             Log.e("请将 aidescit.rsa.private 设置为经 Base64 加密后的字符串", e)
@@ -44,6 +44,6 @@ class KeyProperty {
     }
 
     fun setPublic(value: String){
-        publicKeySetter = Base64Util.decodeToString(value)
+        publicKey = Base64Util.decodeToString(value)
     }
 }

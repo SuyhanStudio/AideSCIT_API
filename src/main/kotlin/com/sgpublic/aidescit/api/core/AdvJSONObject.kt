@@ -3,7 +3,7 @@ package com.sgpublic.aidescit.api.core
 import org.json.JSONObject
 
 /** 修复获取键值为 null 的情况下报错的问题 */
-class NullableJSONObject(source: String) : JSONObject(source) {
+class AdvJSONObject(source: String) : JSONObject(source) {
     fun getString(key: String, default: String): String {
         if (!isNull(key)){
             return super.getString(key)
