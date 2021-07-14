@@ -3,15 +3,16 @@ package com.sgpublic.aidescit.api.core.spring
 import com.sgpublic.aidescit.api.core.spring.interceptor.SignInterceptor
 import com.sgpublic.aidescit.api.core.spring.property.SqlProperty
 import org.springframework.boot.jdbc.DataSourceBuilder
-import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
-import org.springframework.context.annotation.Lazy
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import javax.sql.DataSource
 
+/**
+ * 自定义配置
+ */
 @Configuration
 class CurrentConfig: WebMvcConfigurer {
     /** 添加自定义拦截器 */

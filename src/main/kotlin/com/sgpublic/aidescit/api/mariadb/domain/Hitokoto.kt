@@ -1,6 +1,7 @@
 package com.sgpublic.aidescit.api.mariadb.domain
 
 import com.sgpublic.aidescit.api.module.APIModule
+import org.json.JSONObject
 import java.io.Serializable
 import javax.persistence.*
 
@@ -44,4 +45,9 @@ class Hitokoto: Serializable {
 
     @Column(name = "h_length")
     var length: Long = 0L
+
+    @Transient
+    override fun toString(): String {
+        return JSONObject(this).toString()
+    }
 }

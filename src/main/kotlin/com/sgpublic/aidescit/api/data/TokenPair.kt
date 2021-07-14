@@ -1,7 +1,7 @@
 package com.sgpublic.aidescit.api.data
 
 /**
- * token 对
+ * token
  * @param access access_token
  * @param refresh refresh_token
  */

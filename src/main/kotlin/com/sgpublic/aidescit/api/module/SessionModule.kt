@@ -12,6 +12,9 @@ import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+/**
+ * 用于获取和刷新用户 ASP.NET_SessionId
+ */
 @Component
 class SessionModule {
     @Autowired

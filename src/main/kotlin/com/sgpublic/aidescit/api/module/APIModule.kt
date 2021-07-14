@@ -1,7 +1,6 @@
 package com.sgpublic.aidescit.api.module
 
-import com.sgpublic.aidescit.api.core.AdvJSONObject
-import com.sgpublic.aidescit.api.core.Cookies
+import com.sgpublic.aidescit.api.core.util.AdvJSONObject
 import com.sgpublic.aidescit.api.data.ViewstateDocument
 import com.sgpublic.aidescit.api.exceptions.ServerRuntimeException
 import okhttp3.*
@@ -165,5 +164,33 @@ object APIModule {
                 add(key, value.toString())
             }
         }.build()
+    }
+
+    /**
+     * Cookies 对象封装
+     */
+    class Cookies private constructor(private val cookies: Map<String, ArrayList<Any>>){
+        override fun toString(): String {
+            return StringBuilder().apply {
+                for ((key, values) in cookies){
+                    for (value in values) {
+                        append("$key=$value; ")
+                    }
+                }
+            }.toString()
+        }
+
+        class Builder {
+            private val cookies: MutableMap<String, ArrayList<Any>> = mutableMapOf()
+
+            fun add(key: String, value: Any){
+                if (cookies[key] == null){
+                    cookies[key] = ArrayList()
+                }
+                cookies[key]?.add(value)
+            }
+
+            fun build() = Cookies(cookies)
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.sgpublic.aidescit.api.mariadb.domain
 
 import com.sgpublic.aidescit.api.module.APIModule
+import org.json.JSONObject
 import javax.persistence.*
 
 /**
@@ -17,10 +18,10 @@ class UserInfo {
     var name: String = ""
 
     @Column(name = "u_identify")
-    var identify: Int = 0
+    var identify: Short = 0
 
     @Column(name = "u_level")
-    var level: Int = 0
+    var level: Short = 0
 
     @Column(name = "u_faculty")
     var faculty: Int = 0
@@ -32,11 +33,16 @@ class UserInfo {
     var classId: Short = 0
 
     @Column(name = "u_grade")
-    var grade: Int = 0
+    var grade: Short = 0
 
     @Column(name = "u_info_expired")
     var expired: Long = APIModule.TS + 1296000
 
     @Transient
     fun isExpired() = expired < APIModule.TS
+
+    @Transient
+    override fun toString(): String {
+        return JSONObject(this).toString()
+    }
 }

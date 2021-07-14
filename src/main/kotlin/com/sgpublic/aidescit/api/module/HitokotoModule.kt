@@ -37,18 +37,20 @@ class HitokotoModule {
         )
 
         try {
-            val result = Hitokoto()
-            result.index = json.getLong("id")
-            result.content = json.getString("hitokoto")
-            result.type = json.getString("type")
-            result.from = json.getString("from")
-            result.fromWho = json.getString("from_who", "")
-            result.creator = json.getString("creator")
-            result.creatorUid = json.getLong("creator_uid")
-            result.reviewer = json.getLong("reviewer")
-            result.length = json.getLong("length")
+            if (hitokoto.getByIndex(json.getLong("id")) == null){
+                val result = Hitokoto()
+                result.index = json.getLong("id")
+                result.content = json.getString("hitokoto")
+                result.type = json.getString("type")
+                result.from = json.getString("from")
+                result.fromWho = json.getString("from_who", "")
+                result.creator = json.getString("creator")
+                result.creatorUid = json.getLong("creator_uid")
+                result.reviewer = json.getLong("reviewer")
+                result.length = json.getLong("length")
 
-            hitokoto.save(result)
+                hitokoto.save(result)
+            }
         } finally { }
         return hitokoto.randGet()
     }

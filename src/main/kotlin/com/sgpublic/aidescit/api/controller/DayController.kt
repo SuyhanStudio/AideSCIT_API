@@ -12,6 +12,6 @@ class DayController {
 
     @RequestMapping("/aidescit/day")
     fun day(): Map<String, Any> {
-        return day.getDay()
+        return day.get()
     }
 }

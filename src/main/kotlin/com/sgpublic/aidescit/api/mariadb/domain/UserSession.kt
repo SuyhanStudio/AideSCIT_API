@@ -1,6 +1,7 @@
 package com.sgpublic.aidescit.api.mariadb.domain
 
 import com.sgpublic.aidescit.api.module.APIModule
+import org.json.JSONObject
 import javax.persistence.*
 
 /**
@@ -39,5 +40,10 @@ class UserSession {
     @Transient
     fun isEffective(): Boolean {
         return effective.compareTo(1) == 0
+    }
+
+    @Transient
+    override fun toString(): String {
+        return JSONObject(this).toString()
     }
 }

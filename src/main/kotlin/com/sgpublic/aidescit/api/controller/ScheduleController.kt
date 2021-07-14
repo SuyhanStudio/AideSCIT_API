@@ -1,6 +1,6 @@
 package com.sgpublic.aidescit.api.controller
 
-import com.sgpublic.aidescit.api.controller.param.SemesterInfo
+import com.sgpublic.aidescit.api.core.param.SemesterInfo
 import com.sgpublic.aidescit.api.core.util.TokenUtil
 import com.sgpublic.aidescit.api.data.TokenPair
 import com.sgpublic.aidescit.api.exceptions.TokenExpiredException

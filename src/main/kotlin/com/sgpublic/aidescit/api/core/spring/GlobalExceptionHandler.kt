@@ -16,7 +16,7 @@ import org.springframework.web.servlet.NoHandlerFoundException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-/** 全局错误拦截器 */
+/** 全局异常拦截器 */
 @RestControllerAdvice
 class GlobalExceptionHandler {
     /**
@@ -91,6 +91,7 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(ServerRuntimeException::class)
     fun handleServerRuntimeException(e: Exception): Map<String, Any> {
+        Log.w("拦截错误，${e.message}", e)
         return FailedResult.SERVER_PROCESSING_ERROR
     }
 

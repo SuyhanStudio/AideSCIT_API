@@ -4,6 +4,9 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.pattern.CompositeConverter
 
+/**
+ * 用于彩色 console 输出
+ */
 class ColoredConsoleConverter: CompositeConverter<ILoggingEvent>() {
     companion object {
         /** 灰色日志前缀 */

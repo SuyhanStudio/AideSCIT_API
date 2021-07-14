@@ -31,4 +31,11 @@ interface HitokotoRepository: JpaRepository<Hitokoto, Long> {
             "select FLOOR(RAND() * (select MAX(`h_id`) from `hitokoto`))" +
             ") order by `h_id` limit 1", nativeQuery = true)
     fun randGet(): Hitokoto
+
+    /**
+     * 从数据库随机调取已保存的 hitokoto
+     * @param index 其在 v1.hitokoto.cn 上的 id
+     * @return 返回 [Hitokoto]
+     */
+    fun getByIndex(index: Long): Hitokoto?
 }

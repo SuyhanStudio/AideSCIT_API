@@ -6,6 +6,9 @@ import org.slf4j.Marker
 import org.slf4j.MarkerFactory
 import kotlin.system.exitProcess
 
+/**
+ * 自定义日志输出封装
+ */
 object Log {
     @JvmStatic
     private val logger: Logger get() {

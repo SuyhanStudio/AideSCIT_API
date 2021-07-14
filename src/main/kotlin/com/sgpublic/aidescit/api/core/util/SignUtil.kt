@@ -8,6 +8,9 @@ import okhttp3.internal.toLongOrDefault
 import org.springframework.beans.factory.annotation.Autowired
 import java.security.MessageDigest
 
+/**
+ * sign 计算工具封装
+ */
 object SignUtil {
     @Autowired
     private lateinit var sign: SignKeysRepository

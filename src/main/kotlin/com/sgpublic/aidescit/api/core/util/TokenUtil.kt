@@ -1,13 +1,14 @@
 package com.sgpublic.aidescit.api.core.util
 
+import com.sgpublic.aidescit.api.Application
 import com.sgpublic.aidescit.api.core.spring.property.TokenProperty
 import com.sgpublic.aidescit.api.data.TokenPair
 import com.sgpublic.aidescit.api.exceptions.InvalidPasswordFormatException
 import com.sgpublic.aidescit.api.exceptions.InvalidRefreshTokenException
+import com.sgpublic.aidescit.api.exceptions.ServerRuntimeException
 import com.sgpublic.aidescit.api.mariadb.dao.UserSessionRepository
 import com.sgpublic.aidescit.api.module.APIModule
 import org.json.JSONObject
-import org.springframework.beans.factory.annotation.Autowired
 
 /**
  * token 管理，支持生成和检查与刷新 token
@@ -18,9 +19,6 @@ class TokenUtil private constructor(private val token: TokenPair){
     private var tokenCreateTime: Long = 0
     private var accessTokenActive: Boolean = false
     private var refreshTokenActive: Boolean = false
-
-    @Autowired
-    private lateinit var userSession: UserSessionRepository
 
     /**
      * access_token 是否有效，忽略其时效性
@@ -81,6 +79,10 @@ class TokenUtil private constructor(private val token: TokenPair){
     }
 
     companion object {
+        private val userSession: UserSessionRepository get() {
+            return Application.getBean("userSessionRepository")
+        }
+
         /**
          * 开始 token 检查
          * @param token 欲检查的 token 对，若想检查 refresh_token 是否有效必须保证 access_token 不为空
@@ -106,7 +108,8 @@ class TokenUtil private constructor(private val token: TokenPair){
                 return result
             }
             result.username = header[0]
-            val password = result.userSession.getUserPassword(result.username)
+            val password = userSession.getUserPassword(result.username)
+                ?: throw ServerRuntimeException.INTERNAL_ERROR
             result.password = RSAUtil.decode(password).apply {
                 if (length <= 8){
                     Log.d("用户密码解析错误")

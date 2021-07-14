@@ -1,8 +1,12 @@
 package com.sgpublic.aidescit.api.core.util
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
 /**
  * LinkedHashMap 的扩展封装
  */
+@Suppress("RedundantModalityModifier")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 open class AdvanceMap(vararg pairs: Pair<String, Any>) : LinkedHashMap<String, Any>() {
     init {
         putAll(*pairs)

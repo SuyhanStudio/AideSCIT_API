@@ -1,5 +1,6 @@
 package com.sgpublic.aidescit.api.result
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.sgpublic.aidescit.api.core.util.AdvanceMap
 
 /**
@@ -7,6 +8,7 @@ import com.sgpublic.aidescit.api.core.util.AdvanceMap
  * @param code 错误码
  * @param message 错误说明
  */
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 class FailedResult(code: Int, message: String): AdvanceMap(
     "code" to code,
     "message" to message

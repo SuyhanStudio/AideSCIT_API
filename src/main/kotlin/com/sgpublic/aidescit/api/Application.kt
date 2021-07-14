@@ -2,18 +2,27 @@ package com.sgpublic.aidescit.api
 
 import com.sgpublic.aidescit.api.core.spring.CurrentConfig
 import com.sgpublic.aidescit.api.core.util.ArgumentReader
+import com.sgpublic.aidescit.api.exceptions.ServerRuntimeException
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Import
 
+/**
+ * 启动入口
+ */
 fun main(args: Array<String>) {
-    runApplication<Application>(*setup(args))
+    context = runApplication<Application>(*setup(args))
 }
 
 private var debug = false
+private lateinit var context: ApplicationContext
 
+/**
+ * SpringBootApplication
+ */
 @SpringBootApplication
 @Import(CurrentConfig::class)
 class Application {
@@ -21,9 +30,29 @@ class Application {
         /** 是否为 Debug 环境 */
         @JvmStatic
         val DEBUG: Boolean get() = debug
+
+        /**
+         * ApplicationContext
+         */
+        @JvmStatic
+        val CONTEXT: ApplicationContext get() = context
+
+        /**
+         * 获取 Bean
+         */
+        inline fun <reified T> getBean(bean: String): T {
+            val beanObject = CONTEXT.getBean(bean)
+            if (beanObject !is T) {
+                throw ServerRuntimeException.INTERNAL_ERROR
+            }
+            return beanObject
+        }
     }
 }
 
+/**
+ * 初始化 SpringApplication 参数
+ */
 class ServletInitializer : SpringBootServletInitializer() {
     override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {
         return application.apply {

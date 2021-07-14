@@ -1,4 +1,4 @@
-package com.sgpublic.aidescit.api.core
+package com.sgpublic.aidescit.api.core.util
 
 import org.json.JSONObject
 

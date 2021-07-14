@@ -1,9 +1,7 @@
 package com.sgpublic.aidescit.api.mariadb.domain
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import org.json.JSONObject
+import javax.persistence.*
 
 /**
  * 数据表 sign_keys
@@ -29,4 +27,9 @@ class SignKeys {
 
     @Column(name = "available")
     var available: Short = 1
+
+    @Transient
+    override fun toString(): String {
+        return JSONObject(this).toString()
+    }
 }

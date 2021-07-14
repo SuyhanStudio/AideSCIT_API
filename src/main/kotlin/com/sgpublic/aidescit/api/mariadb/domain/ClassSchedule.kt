@@ -1,8 +1,11 @@
 package com.sgpublic.aidescit.api.mariadb.domain
 
+import com.sgpublic.aidescit.api.data.ScheduleData
 import com.sgpublic.aidescit.api.module.APIModule
 import org.json.JSONObject
 import javax.persistence.*
+import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.declaredMemberProperties
 
 /**
  * 数据表 class_schedule
@@ -24,7 +27,7 @@ class ClassSchedule {
     var classId: Short = 0
 
     @Column(name = "t_grade")
-    var grade: Int = 0
+    var grade: Short = 0
 
     @Column(name = "t_school_year")
     var year: String = ""
@@ -42,5 +45,41 @@ class ClassSchedule {
     fun isExpired() = expired < APIModule.TS
 
     @Transient
-    fun getContent() = JSONObject(content)
+    fun getContent(): ScheduleData {
+        JSONObject(content).run {
+            val result = ScheduleData::class.createInstance()
+            ScheduleData::class.declaredMemberProperties.forEach for1@{ data ->
+                val dataJson = try {
+                    getJSONObject(data.name)
+                } catch (e: Exception){
+                    return@for1
+                }
+                ScheduleData.Companion.ScheduleDay::class.declaredMemberProperties.forEach for2@{ day ->
+                    try {
+                        dataJson.getJSONArray(day.name)
+                    } catch (e: Exception){
+                        return@for2
+                    }.forEach for3@{ position ->
+                        val json = position as JSONObject
+                        val entry = day.get(data.get(result) as ScheduleData.Companion.ScheduleDay)
+                                as ScheduleData.Companion.ScheduleItemGroup
+                        val item = ScheduleData.Companion.ScheduleItem::class.createInstance()
+                        item.name = json.getString("name")
+                        item.room = json.getString("room")
+                        item.teacher = json.getString("teacher")
+                        json.getJSONArray("range").forEach {
+                            item.range.add((it as Int).toShort())
+                        }
+                        entry.add(item)
+                    }
+                }
+            }
+            return result
+        }
+    }
+
+    @Transient
+    override fun toString(): String {
+        return JSONObject(this).toString()
+    }
 }

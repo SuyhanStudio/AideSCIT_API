@@ -1,6 +1,6 @@
 package com.sgpublic.aidescit.api.controller
 
-import com.sgpublic.aidescit.api.controller.param.Token
+import com.sgpublic.aidescit.api.core.param.Token
 import com.sgpublic.aidescit.api.module.HitokotoModule
 import com.sgpublic.aidescit.api.result.SuccessResult
 import org.springframework.beans.factory.annotation.Autowired

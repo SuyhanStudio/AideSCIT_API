@@ -17,17 +17,6 @@ open class ConsoleFilter: AbstractMatcherFilter<ILoggingEvent>() {
         private val product = Level.WARN
     }
 
-    override fun decide(event: ILoggingEvent): FilterReply {
-        if (!isStarted) {
-            return FilterReply.NEUTRAL
-        }
-        return if (event.loggerName.startsWith("com.sgpublic")){
-            filterOnSelf(event)
-        } else {
-            filterOnOther(event)
-        }
-    }
-
     /**
      * 若日志来自自己，则根据是否 DEBUG 过滤
      */
@@ -48,6 +37,17 @@ open class ConsoleFilter: AbstractMatcherFilter<ILoggingEvent>() {
             FilterReply.NEUTRAL
         } else {
             FilterReply.DENY
+        }
+    }
+
+    override fun decide(event: ILoggingEvent): FilterReply {
+        if (!isStarted) {
+            return FilterReply.NEUTRAL
+        }
+        return if (event.loggerName.startsWith("com.sgpublic")){
+            filterOnSelf(event)
+        } else {
+            filterOnOther(event)
         }
     }
 }
