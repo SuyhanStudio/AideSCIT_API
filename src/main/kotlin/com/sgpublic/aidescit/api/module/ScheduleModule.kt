@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.regex.Pattern
 
+/**
+ * 课表模块
+ */
 @Component
 class ScheduleModule {
     @Autowired
@@ -25,6 +28,12 @@ class ScheduleModule {
     @Autowired
     private lateinit var session: SessionModule
 
+    /**
+     * 获取用户课表
+     * @param username 用户学号/工号
+     * @param year 学年
+     * @param semester 学期
+     */
     fun get(username: String, year: String = SemesterInfoProperty.YEAR,
             semester: Short = SemesterInfoProperty.SEMESTER): ScheduleData {
         val userInfo = info.get(username)
@@ -38,7 +47,14 @@ class ScheduleModule {
         }
     }
 
+    /**
+     * 从教务系统刷新用户课表
+     * @param username 用户学号/工号
+     * @param year 学年
+     * @param semester 学期
+     */
     private fun refresh(username: String, year: String, semester: Short): ScheduleData {
+        Log.d("刷新课表", username)
         val user = info.get(username)
         val session = session.get(username).session
         return when (user.identify){
@@ -52,6 +68,9 @@ class ScheduleModule {
         }
     }
 
+    /**
+     * 获取学生课表
+     */
     private fun refreshStudent(user: UserInfo, year: String, semester: Short, session: String): ScheduleData {
         val url = "http://218.6.163.93:8081/tjkbcx.aspx?xh=${user.username}"
         var viewstate = APIModule.executeDocument(
@@ -163,11 +182,17 @@ class ScheduleModule {
         }
     }
 
+    /**
+     * 获取教师日程表
+     */
     @Suppress("UNUSED_PARAMETER")
     private fun refreshTeacher(user: UserInfo, year: String, semester: Short, session: String): ScheduleData {
         throw ServiceUnavailableException()
     }
 
+    /**
+     * 解析课表数据
+     */
     private fun parseSchedule(doc: Document): ScheduleData {
         val result = ScheduleData()
         var resultCount = 0

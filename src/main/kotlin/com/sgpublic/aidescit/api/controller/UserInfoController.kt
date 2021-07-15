@@ -26,7 +26,9 @@ class UserInfoController {
 
     @RequestMapping("/aidescit/info")
     fun getUserInfo(@RequestParam(name = "access_token") token: String): Map<String, Any> {
-        val check = TokenUtil.startVerify(TokenPair(token))
+        val check = TokenUtil.startVerify(TokenPair().apply {
+            accessToken = token
+        })
         if (check.isAccessTokenExpired()){
             throw TokenExpiredException()
         }

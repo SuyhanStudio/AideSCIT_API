@@ -8,7 +8,7 @@ import java.util.*
 import kotlin.properties.Delegates
 
 /**
- * 处理接口 [com.sgpublic.aidescit.api.controller.DayController]
+ * 学期信息模块
  */
 @Component
 class DayModule {

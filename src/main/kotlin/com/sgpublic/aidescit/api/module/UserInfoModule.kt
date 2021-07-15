@@ -1,6 +1,7 @@
 package com.sgpublic.aidescit.api.module
 
 import com.sgpublic.aidescit.api.core.spring.property.SemesterInfoProperty
+import com.sgpublic.aidescit.api.core.util.Log
 import com.sgpublic.aidescit.api.exceptions.ServerRuntimeException
 import com.sgpublic.aidescit.api.mariadb.dao.ClassChartRepository
 import com.sgpublic.aidescit.api.mariadb.dao.FacultyChartRepository
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component
 import java.util.regex.Pattern
 
 /**
- * 用户获取和刷新用户基本信息，同时处理接口 [com.sgpublic.aidescit.api.controller.UserInfoController]
+ * 用户基本信息模块
  */
 @Component
 class UserInfoModule {
@@ -30,6 +31,10 @@ class UserInfoModule {
     @Autowired
     private lateinit var session: SessionModule
 
+    /**
+     * 获取用户基本信息
+     * @param username 用户学号/工号
+     */
     fun get(username: String): UserInfo {
         val userInfo = info.getByUsername(username)
             ?: return refresh(username)
@@ -40,7 +45,12 @@ class UserInfoModule {
         }
     }
 
+    /**
+     * 从教务系统刷新用户基本信息
+     * @param username 用户学号/工号
+     */
     private fun refresh(username: String): UserInfo {
+        Log.d("刷新用户信息", username)
         val result = UserInfo()
         result.username = username
         val session = session.get(username).run {

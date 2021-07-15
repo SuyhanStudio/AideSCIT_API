@@ -1,4 +1,4 @@
-package com.sgpublic.aidescit.api.core.param
+package com.sgpublic.aidescit.api.data
 
 import com.sgpublic.aidescit.api.core.spring.property.SemesterInfoProperty
 import org.json.JSONObject

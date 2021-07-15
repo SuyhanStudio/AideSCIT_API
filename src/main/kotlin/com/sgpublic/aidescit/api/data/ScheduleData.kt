@@ -1,9 +1,8 @@
 package com.sgpublic.aidescit.api.data
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.sgpublic.aidescit.api.core.util.AdvanceMap
 import com.sgpublic.aidescit.api.data.ScheduleData.Companion.ScheduleDay
-import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -16,45 +15,31 @@ import org.json.JSONObject
  * @param friday 周五
  * @param saturday 周六
  */
+@Suppress("KDocUnresolvedReference")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-data class ScheduleData(
-    val sunday: ScheduleDay = ScheduleDay(),
-    val monday: ScheduleDay = ScheduleDay(),
-    val tuesday: ScheduleDay = ScheduleDay(),
-    val wednesday: ScheduleDay = ScheduleDay(),
-    val thursday: ScheduleDay = ScheduleDay(),
-    val friday: ScheduleDay = ScheduleDay(),
-    val saturday: ScheduleDay = ScheduleDay()
-) {
+class ScheduleData: AdvanceMap() {
+    val sunday: ScheduleDay get() = getSet("sunday")
+    val monday: ScheduleDay get() = getSet("monday")
+    val tuesday: ScheduleDay get() = getSet("tuesday")
+    val wednesday: ScheduleDay get() = getSet("wednesday")
+    val thursday: ScheduleDay get() = getSet("thursday")
+    val friday: ScheduleDay get() = getSet("friday")
+    val saturday: ScheduleDay get() = getSet("saturday")
+
+    private fun getSet(key: String): ScheduleDay {
+        if (!containsKey(key)){
+            put(key, ScheduleDay())
+        }
+        return get(key) as ScheduleDay
+    }
+
     override fun toString(): String {
-        return JSONObject().apply {
-            if (sunday.isNotEmpty()){
-                put("sunday", JSONObject(sunday.toString()))
-            }
-            if (monday.isNotEmpty()){
-                put("monday", JSONObject(monday.toString()))
-            }
-            if (tuesday.isNotEmpty()){
-                put("tuesday", JSONObject(tuesday.toString()))
-            }
-            if (wednesday.isNotEmpty()){
-                put("wednesday", JSONObject(wednesday.toString()))
-            }
-            if (thursday.isNotEmpty()){
-                put("thursday", JSONObject(thursday.toString()))
-            }
-            if (friday.isNotEmpty()){
-                put("friday", JSONObject(friday.toString()))
-            }
-            if (saturday.isNotEmpty()){
-                put("saturday", JSONObject(saturday.toString()))
-            }
-        }.toString()
+        return JSONObject(this).toString()
     }
 
     companion object {
         /**
-         * 单日课程
+         * 单日课程，每个位置上的课程封装为 [ScheduleItemGroup]
          * @param am1 第 1-2 节，即上午第一节
          * @param am2 第 3-4 节，即上午第二节
          * @param pm1 第 5-6 节，即下午第一节
@@ -62,59 +47,24 @@ data class ScheduleData(
          * @param ev 第 9-10 节，即晚上第一节
          */
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        data class ScheduleDay(
-            val am1: ScheduleItemGroup = ScheduleItemGroup(),
-            val am2: ScheduleItemGroup = ScheduleItemGroup(),
-            val pm1: ScheduleItemGroup = ScheduleItemGroup(),
-            val pm2: ScheduleItemGroup = ScheduleItemGroup(),
-            val ev: ScheduleItemGroup = ScheduleItemGroup()
-        ) {
-            override fun toString(): String {
-                return JSONObject().apply {
-                    if (am1.isNotEmpty()){
-                        put("am1", JSONArray().apply {
-                            am1.forEach {
-                                put(JSONObject(it.toString()))
-                            }
-                        })
-                    }
-                    if (am2.isNotEmpty()){
-                        put("am2", JSONArray().apply {
-                            am2.forEach {
-                                put(JSONObject(it.toString()))
-                            }
-                        })
-                    }
-                    if (pm1.isNotEmpty()){
-                        put("pm1", JSONArray().apply {
-                            pm1.forEach {
-                                put(JSONObject(it.toString()))
-                            }
-                        })
-                    }
-                    if (pm2.isNotEmpty()){
-                        put("pm2", JSONArray().apply {
-                            pm2.forEach {
-                                put(JSONObject(it.toString()))
-                            }
-                        })
-                    }
-                    if (ev.isNotEmpty()){
-                        put("ev", JSONArray().apply {
-                            ev.forEach {
-                                put(JSONObject(it.toString()))
-                            }
-                        })
-                    }
-                }.toString()
-            }
+        class ScheduleDay: AdvanceMap() {
+            val am1: ScheduleItemGroup get() = getSet("am1")
+            val am2: ScheduleItemGroup get() = getSet("am2")
+            val pm1: ScheduleItemGroup get() = getSet("pm1")
+            val pm2: ScheduleItemGroup get() = getSet("pm2")
+            val ev: ScheduleItemGroup get() = getSet("ev")
 
-            @JsonIgnore
-            fun isNotEmpty(): Boolean {
-                return am1.size + am2.size + pm1.size + pm2.size + ev.size > 0
+            private fun getSet(key: String): ScheduleItemGroup {
+                if (!containsKey(key)){
+                    put(key, ScheduleItemGroup())
+                }
+                return get(key) as ScheduleItemGroup
             }
         }
 
+        /**
+         * 单个位置的课程组合，用于应对单个位置有多个课程安排的情况
+         */
         class ScheduleItemGroup: ArrayList<ScheduleItem>()
 
         /**
@@ -130,30 +80,11 @@ data class ScheduleData(
             var teacher: String = "",
             val range: ArrayList<Short> = arrayListOf()
         ) {
-            override fun toString(): String {
-                return JSONObject()
-                    .put("name", name)
-                    .put("room", room)
-                    .put("teacher", teacher)
-                    .put("range", JSONArray().apply {
-                        range.forEach {
-                            put(it)
-                        }
-                    })
-                    .toString()
-            }
-
             override fun equals(other: Any?): Boolean {
                 if (other !is ScheduleItem){
                     return false
                 }
-                if (other.name != name){
-                    return false
-                }
-                if (other.room != room){
-                    return false
-                }
-                if (other.teacher != teacher){
+                if (other.name != name || other.room != room || other.teacher != teacher){
                     return false
                 }
                 return true

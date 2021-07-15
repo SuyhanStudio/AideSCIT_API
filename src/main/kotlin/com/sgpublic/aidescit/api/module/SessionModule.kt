@@ -82,7 +82,7 @@ class SessionModule {
      * @param password 用户明文密码
      * @return 返回 [UserSession]
      */
-    fun getVerifyLocation(username: String, password: String): UserSession {
+    fun getVerifyLocation(username: String, password: String? = null): UserSession {
         val result = UserSession()
         val resp1 = APIModule.executeResponse(
             url = "http://218.6.163.95:18080/zfca/login",
@@ -110,6 +110,9 @@ class SessionModule {
             throw ServerRuntimeException("lt 解析失败")
         }
         val lt = input.attr("value")
+        val pwd: String = password
+            ?: userSession.getUserPassword(username)
+            ?: throw UserNotFoundException()
         val resp2 = APIModule.executeResponse(
             url = "http://218.6.163.95:18080/zfca/login;jsessionid=$jsId1",
             body = APIModule.buildFormBody(
@@ -117,7 +120,7 @@ class SessionModule {
                 "isremenberme" to 0,
                 "ip" to 0,
                 "username" to username,
-                "password" to password,
+                "password" to pwd,
                 "losetime" to 30,
                 "lt" to lt,
                 "_eventId" to "submit",
