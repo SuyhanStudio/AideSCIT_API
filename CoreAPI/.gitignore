@@ -1,4 +1,10 @@
-HELP.md
+### 自定义配置文件 ###
+src/main/resources/token.properties
+src/main/resources/sql.properties
+src/main/resources/key.properties
+src/main/resources/semester.properties
+
+### SpringBoot Project ###
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar

@@ -1,1 +1,1 @@
-rootProject.name = "SCITEduTool_API"
+rootProject.name = "AideSCIT_API"
