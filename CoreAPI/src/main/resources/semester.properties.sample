@@ -4,5 +4,5 @@ aidescit.semester.num=
 aidescit.semester.year=
 # 当前是否开启教评，请根据教务系统具体情况设置，默认为：false
 aidescit.semester.evaluation=false
-# 当前学期开学日期，请填写如下格式的日期：YYYY/MM/dd
+# 当前学期开学日期，请填写如下格式的日期：yyyy/MM/dd
 aidescit.semester.start=

@@ -13,12 +13,15 @@ import org.springframework.stereotype.Component
 class SqlProperty {
     companion object {
         private lateinit var driverClassName: String
+        private lateinit var platform: String
         private lateinit var url: String
         private lateinit var username: String
         private lateinit var password: String
 
         @JvmStatic
         val DRIVER_CLASS_NAME: String get() = driverClassName
+        @JvmStatic
+        val DATABASE_PLATFORM: String get() = platform
         @JvmStatic
         val URL: String get() = url
         @JvmStatic
@@ -29,6 +32,10 @@ class SqlProperty {
 
     fun setDriverClassName(value: String) {
         driverClassName = value
+    }
+
+    fun setDatabasePlatform(value: String) {
+        platform = value
     }
 
     fun setUrl(value: String) {

@@ -7,7 +7,9 @@ import com.sgpublic.aidescit.api.module.SessionModule
 import com.sgpublic.aidescit.api.result.FailedResult
 import com.sgpublic.aidescit.api.result.SuccessResult
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -20,13 +22,15 @@ class LoginController: BaseController() {
         session.get(username, password)
         val token = TokenUtil.create(username, password)
         return SuccessResult(
-            "access_token" to token.accessToken,
-            "refresh_token" to token.refreshToken
+            "access_token" to token.access,
+            "refresh_token" to token.refresh
         )
     }
 
     @RequestMapping("/aidescit/login/springboard")
-    fun springboard(token: TokenPair, sign: String): Map<String, Any> {
+    fun springboard(
+        @RequestParam(name = "access_token") token: String, sign: String
+    ): Map<String, Any> {
         val check = checkAccessToken(token)
         return SuccessResult(
             "location" to session.getVerifyLocation(check.getUsername()).verifyLocation
@@ -34,9 +38,11 @@ class LoginController: BaseController() {
     }
 
     @RequestMapping("/aidescit/login/token")
-    fun refreshToken(token: TokenPair, sign: String): Map<String, Any> {
-        val check = TokenUtil.startVerify(token)
-        if (check.isAccessTokenActive() || check.isRefreshTokenActive()){
+    fun refreshToken(@RequestParam(name = "access_token") access: String,
+                     @RequestParam(name = "refresh_token") refresh: String,
+                     sign: String): Map<String, Any> {
+        val check = TokenUtil.startVerify(TokenPair(access, refresh))
+        if (!check.isAccessTokenActive()){
             return FailedResult.EXPIRED_TOKEN
         }
         if (check.isRefreshTokenExpired()){
@@ -44,7 +50,7 @@ class LoginController: BaseController() {
         }
         return if (!check.isAccessTokenExpired()){
             SuccessResult(
-                "access_token" to token.accessToken,
+                "access_token" to access,
                 "expired" to check.getAccessTokenValidTime()
             )
         } else {
@@ -52,7 +58,7 @@ class LoginController: BaseController() {
             SuccessResult(
                 "access_token" to newToken,
                 "expired" to TokenUtil.startVerify(TokenPair().apply {
-                    accessToken = newToken
+                    this.access = newToken
                 }).getAccessTokenValidTime()
             )
         }

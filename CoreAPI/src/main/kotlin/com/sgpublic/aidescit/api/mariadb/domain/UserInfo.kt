@@ -45,4 +45,14 @@ class UserInfo {
     override fun toString(): String {
         return JSONObject(this).toString()
     }
+
+    @Transient
+    fun isTeacher(): Boolean {
+        return !isStudent()
+    }
+
+    @Transient
+    fun isStudent(): Boolean {
+        return identify.compareTo(0) == 0
+    }
 }

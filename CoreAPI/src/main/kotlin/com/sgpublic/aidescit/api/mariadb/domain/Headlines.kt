@@ -14,7 +14,7 @@ import javax.persistence.*
 class Headlines {
     @Id
     @Column(name = "h_id")
-    var id: Int = 0
+    var nid: Int = 0
 
     @Id
     @Column(name = "h_type_id")

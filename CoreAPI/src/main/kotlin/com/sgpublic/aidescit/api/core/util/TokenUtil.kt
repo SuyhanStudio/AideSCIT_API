@@ -73,9 +73,9 @@ class TokenUtil private constructor(private val token: TokenPair){
             throw InvalidRefreshTokenException()
         }
         if (!isAccessTokenExpired()){
-            return token.accessToken
+            return token.access
         }
-        return create(username, password).accessToken
+        return create(username, password).access
     }
 
     companion object {
@@ -91,11 +91,11 @@ class TokenUtil private constructor(private val token: TokenPair){
         @JvmStatic
         fun startVerify(token: TokenPair): TokenUtil {
             val result = TokenUtil(token)
-            if (token.accessToken == ""){
+            if (token.access == ""){
                 Log.d("access_token 为空")
                 return result
             }
-            val accessPre = token.accessToken.split(".")
+            val accessPre = token.access.split(".")
             if (accessPre.size != 3){
                 Log.d("access_token 格式错误")
                 return result
@@ -137,11 +137,11 @@ class TokenUtil private constructor(private val token: TokenPair){
             }
             result.accessTokenActive = true
 
-            if (token.refreshToken == ""){
+            if (token.refresh == ""){
                 return result
             }
 
-            val refreshPre = token.refreshToken.split(" ")
+            val refreshPre = token.refresh.split(".")
             if (refreshPre.size != 2){
                 Log.d("refresh_token 格式错误")
                 return result
@@ -154,7 +154,7 @@ class TokenUtil private constructor(private val token: TokenPair){
                 return result
             }
             val refreshCheckPre = "$refreshBody.${accessPre[1]}.${TokenProperty.TOKEN_SECRET}"
-            if (MD5Util.encode(refreshCheckPre) != refreshPre[1]){
+            if (MD5Util.encodeFull(refreshCheckPre) != refreshPre[1]){
                 Log.d("refresh_token 签名无效")
                 return result
             }
@@ -195,14 +195,14 @@ class TokenUtil private constructor(private val token: TokenPair){
             val refreshBodyPre = bodyPre.apply {
                 put("type", "refresh")
             }.toString()
-            token.accessToken = "${MD5Util.encode(accessBodyPre)}.$header."
-            token.refreshToken = "${MD5Util.encode(refreshBodyPre)}."
+            token.access = "${MD5Util.encode(accessBodyPre)}.$header."
+            token.refresh = "${MD5Util.encode(refreshBodyPre)}."
 
-            val accessFooterPre = "${token.accessToken}${TokenProperty.TOKEN_SECRET}"
-            val refreshFooterPre = "${token.refreshToken}$header.${TokenProperty.TOKEN_SECRET}"
+            val accessFooterPre = "${token.access}${TokenProperty.TOKEN_SECRET}"
+            val refreshFooterPre = "${token.refresh}$header.${TokenProperty.TOKEN_SECRET}"
 
-            token.accessToken += MD5Util.encode(accessFooterPre)
-            token.refreshToken += MD5Util.encodeFull(refreshFooterPre)
+            token.access += MD5Util.encode(accessFooterPre)
+            token.refresh += MD5Util.encodeFull(refreshFooterPre)
 
             return token
         }

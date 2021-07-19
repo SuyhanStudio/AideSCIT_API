@@ -25,7 +25,9 @@ class FailedResult(code: Int, message: String): AdvanceMap(
         @JvmStatic
         val EXPIRED_TOKEN = FailedResult(-402, "无效的 token")
         @JvmStatic
-        val EXPIRED_REFRESH_TOKEN = FailedResult(-403, "token 失效，请重新登陆")
+        val EMPTY_RESULT = FailedResult(-403, "数据为空")
+        @JvmStatic
+        val EXPIRED_REFRESH_TOKEN = FailedResult(-404, "token 失效，请重新登陆")
         @JvmStatic
         val INTERNAL_SERVER_ERROR = FailedResult(-500, "服务器内部错误")
         @JvmStatic

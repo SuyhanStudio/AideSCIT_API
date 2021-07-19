@@ -7,7 +7,7 @@ import com.sgpublic.aidescit.api.exceptions.TokenExpiredException
 abstract class BaseController {
     fun checkAccessToken(token: String): TokenUtil {
         return checkAccessToken(TokenPair().apply {
-            accessToken = token
+            access = token
         })
     }
 

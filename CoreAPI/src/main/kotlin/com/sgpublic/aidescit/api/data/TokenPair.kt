@@ -1,21 +1,24 @@
 package com.sgpublic.aidescit.api.data
 
 import org.json.JSONObject
+import org.springframework.web.bind.annotation.RequestParam
 
 /**
  * token
- * @param accessToken access_token
- * @param refreshToken refresh_token
+ * @param access access_token
+ * @param refresh refresh_token
  */
 @Suppress("KDocUnresolvedReference")
-class TokenPair {
-    var accessToken: String = ""
-    var refreshToken: String = ""
-
+class TokenPair (
+    @RequestParam(name = "access_token", required = false, defaultValue = "")
+    var access: String = "",
+    @RequestParam(name = "refresh_token", required = false, defaultValue = "")
+    var refresh: String = ""
+) {
     override fun toString(): String {
         return JSONObject()
-            .put("access_token", accessToken)
-            .put("refresh_token", refreshToken)
+            .put("access_token", access)
+            .put("refresh_token", refresh)
             .toString()
     }
 }

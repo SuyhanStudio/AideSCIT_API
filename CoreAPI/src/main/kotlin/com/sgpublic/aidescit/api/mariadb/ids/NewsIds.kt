@@ -6,7 +6,7 @@ import java.io.Serializable
  * 数据表 news、news_headlines 多主键封装
  */
 class NewsIds: Serializable {
-    var id: Int = 0
+    var nid: Int = 0
 
     var tid: Int = 0
 
@@ -14,11 +14,11 @@ class NewsIds: Serializable {
         if (other !is NewsIds){
             return false
         }
-        return other.id == id && other.tid ==  tid
+        return other.nid == nid && other.tid ==  tid
     }
 
     override fun hashCode(): Int {
-        var result = id
+        var result = nid
         result = 31 * result + tid
         return result
     }

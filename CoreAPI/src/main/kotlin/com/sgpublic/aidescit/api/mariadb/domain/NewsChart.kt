@@ -11,7 +11,7 @@ import javax.persistence.*
 class NewsChart {
     @Id
     @Column(name = "n_type_id")
-    var id: Int = 0
+    var tid: Int = 0
 
     @Column(name = "n_name")
     var name: String = ""
@@ -32,12 +32,12 @@ class NewsChart {
         if (other !is NewsChart){
             return false
         }
-        return other.id == id
+        return other.tid == tid
     }
 
     @JsonIgnore
     @Transient
     override fun hashCode(): Int {
-        return id
+        return tid
     }
 }

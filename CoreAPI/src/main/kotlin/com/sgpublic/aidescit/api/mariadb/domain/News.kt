@@ -1,6 +1,7 @@
 package com.sgpublic.aidescit.api.mariadb.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.sgpublic.aidescit.api.mariadb.ids.NewsIds
 import org.json.JSONArray
 import javax.persistence.*
@@ -11,10 +12,11 @@ import javax.persistence.*
 @Entity
 @IdClass(NewsIds::class)
 @Table(name = "news")
+@Suppress("MemberVisibilityCanBePrivate")
 class News {
     @Id
     @Column(name = "n_id")
-    var id: Int = 0
+    var nid: Int = 0
 
     @Id
     @Column(name = "n_type_id")
@@ -26,32 +28,29 @@ class News {
     @Column(name = "n_summary")
     var summary: String = ""
 
-    @JsonIgnore
-    @Column(name = "n_images")
-    private var images: String = ""
-
-    @Column(name = "n_create_time")
-    var createTime: String = ""
-
-    @Transient
-    fun getImages(): ArrayList<String> {
-        return ArrayList<String>().apply {
-            JSONArray(images).forEach {
-                add(it as String)
-            }
+    var images: ArrayList<String>
+    get() = ArrayList<String>().apply {
+        JSONArray(imagesContent).forEach {
+            add(it as String)
         }
     }
+    set(value) {
+        imagesContent = JSONArray(value).toString()
+    }
 
     @JsonIgnore
-    @Transient
-    fun setImages(list: ArrayList<String>){
-        images = JSONArray(list).toString()
-    }
+    @Column(name = "n_images")
+    var imagesContent: String = ""
+
+    @Column(name = "n_create_time")
+    @JsonProperty("create_time")
+    var createTime: String = ""
 
     companion object {
         class NewsList {
+            @JsonProperty("has_next")
             var hasNext: Boolean = false
-            private val list: ArrayList<News> = arrayListOf()
+            val list: ArrayList<News> = arrayListOf()
 
             @JsonIgnore
             fun add(news: News){

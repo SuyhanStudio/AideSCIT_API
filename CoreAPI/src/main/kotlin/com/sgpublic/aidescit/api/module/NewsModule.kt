@@ -60,7 +60,7 @@ class NewsModule {
         doc1.select(".menu").select("ul").select("li").forEach {
             val item = NewsChart()
             it.select("a").run {
-                item.id = parseTid(this.attr("href"))
+                item.tid = parseTid(this.attr("href"))
                     ?: return@forEach
                 item.name = text()
             }
@@ -78,11 +78,11 @@ class NewsModule {
      */
     fun listNewsByType(tid: Int, page: Int): News.Companion.NewsList {
         newsTypes.getAll().let {
-            if (!it.contains(NewsChart().apply { this.id = tid })){
+            if (!it.contains(NewsChart().apply { this.tid = tid })){
                 throw ServerRuntimeException("新闻类别不存在")
             }
         }
-        val url = "http://www.scit.cn/newslist${tid}_${page / 2 - 1}.htm"
+        val url = "http://www.scit.cn/newslist${tid}_${page / 2 + 1}.htm"
         val doc1 = APIModule.executeDocument(
             url = url,
             method = APIModule.METHOD_GET,
@@ -110,13 +110,15 @@ class NewsModule {
                     return@forEachIndexed
                 }
                 matcher.group(0).run {
-                    if (length <= 4){
+                    if (length <= 2){
                         Log.d("id解析失败")
                         return@forEachIndexed
                     }
-                    result.add(getNewsById(
-                        tid, substring(4).toInt()
-                    ))
+                    try {
+                        result.add(getNewsById(
+                            tid, substring(1, length - 1).toInt()
+                        ))
+                    } catch (e: ServerRuntimeException) { }
                 }
             }
         }
@@ -227,8 +229,8 @@ class NewsModule {
                 images.add(imageUrl)
             }
         }
-        item.setImages(images)
-        item.id = nid
+        item.images = images
+        item.nid = nid
         item.tid = tid
         news.save(item)
         return item
@@ -250,7 +252,7 @@ class NewsModule {
             headlines.addAll(refreshHeadlines())
         }
         headlines.forEach {
-            it.title = getNewsById(it.id, it.tid).title
+            it.title = getNewsById(it.tid, it.nid).title
         }
         return headlines
     }
@@ -289,6 +291,7 @@ class NewsModule {
                 .attr("src")
             result.add(item)
         }
+        headlines.deleteAll()
         headlines.saveAll(result)
         return result
     }
@@ -299,7 +302,8 @@ class NewsModule {
      */
     private fun parseTidAndNid(item: Headlines, content: Elements): Boolean {
         val href = content.attr("href")
-        item.id = parseTid(href)
+        Log.d(href)
+        item.tid = parseTid(href)
             ?: return false
         val matcher = Pattern.compile(
             "[^t]id=(\\d+)"
@@ -313,7 +317,7 @@ class NewsModule {
                 Log.d("id解析失败")
                 return false
             }
-            item.tid = substring(4).toInt()
+            item.nid = substring(4).toInt()
         }
         return true
     }

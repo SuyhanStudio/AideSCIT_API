@@ -14,7 +14,7 @@ class NewsController {
     @RequestMapping("/aidescit/news/type")
     fun getType(sign: String): Map<String, Any> {
         return SuccessResult(
-            "types" to news.getTypeChart()
+            "charts" to news.getTypeChart()
         )
     }
 

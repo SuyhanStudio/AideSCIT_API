@@ -1,5 +1,7 @@
 # 设置数据库驱动
 aidescit.datasource.driver-class-name=org.mariadb.jdbc.Driver
+# 设置 Hibernate SQL 方言
+aidescit.datasource.database-platform=org.hibernate.dialect.MariaDB53Dialect
 
 # 设置数据库链接 URL
 aidescit.datasource.url=jdbc:mariadb://localhost:3306/aidescit

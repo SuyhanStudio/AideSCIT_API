@@ -39,8 +39,6 @@ object APIModule {
     @JvmStatic
     val TS: Long get() = System.currentTimeMillis() / 1000
 
-//    private var currentResponse: Response? = null
-
     /**
      * 创建请求并执行
      * @param url 请求地址
@@ -80,8 +78,6 @@ object APIModule {
         }
         request.url(urlFinal.toString())
         client.newCall(request.build()).execute().let {
-//            currentResponse?.close()
-//            currentResponse = it
             return it
         }
     }
@@ -96,17 +92,23 @@ object APIModule {
     fun executeDocument(url: String, body: FormBody? = null, headers: Headers? = null,
                         cookies: Cookies? = null, method: Int = METHOD_GET,
                         checkViewstate: Boolean = true): ViewstateDocument {
-        return executeResponse(url, body, headers, cookies, method).body?.string()?.run {
-            val doc = Jsoup.parse(this)
+        executeResponse(url, body, headers, cookies, method).body?.string().run {
+            if (this == null){
+                throw ServerRuntimeException.NETWORK_FAILED
+            }
+            val result = ViewstateDocument()
+            result.document = Jsoup.parse(this)
             if (!checkViewstate){
-                return@run ViewstateDocument(doc)
+                return result
             }
-            val viewstate = doc.select("#__VIEWSTATE").attr("value")
-            if (viewstate == ""){
-                throw ServerRuntimeException.VIEWSTATE_NOT_FOUND
+            result.document.select("#__VIEWSTATE").attr("value").let {
+                if (it == ""){
+                    throw ServerRuntimeException.VIEWSTATE_NOT_FOUND
+                }
+                result.viewstate = it
             }
-            return@run ViewstateDocument(doc, viewstate)
-        } ?: throw ServerRuntimeException.NETWORK_FAILED
+            return result
+        }
     }
 
     /**

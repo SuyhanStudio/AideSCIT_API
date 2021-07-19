@@ -13,7 +13,7 @@ import kotlin.properties.Delegates
 @Component
 class DayModule {
     private lateinit var result: SuccessResult
-    private var expired by Delegates.notNull<Long>()
+    private var expired: Long = 0
 
     /**
      * 获取信息
@@ -32,7 +32,7 @@ class DayModule {
     private fun refresh(): SuccessResult {
         val timeNow = Calendar.getInstance().timeInMillis
         val timeBetween = (timeNow - SemesterInfoProperty.START.timeInMillis) / 86400000
-        val sdf = SimpleDateFormat.getDateInstance()
+        val sdf = SimpleDateFormat("yyyy/MM/dd", Locale.CHINESE)
 
         SuccessResult(
             "day_count" to timeBetween,

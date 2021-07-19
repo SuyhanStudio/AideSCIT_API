@@ -6,7 +6,7 @@ import java.security.MessageDigest
  * MD5 简单封装
  */
 object MD5Util {
-    private val instance: MessageDigest = MessageDigest.getInstance("MD5")
+    private val instance: MessageDigest get() = MessageDigest.getInstance("MD5")
 
     /**
      * 计算 16 位 MD5

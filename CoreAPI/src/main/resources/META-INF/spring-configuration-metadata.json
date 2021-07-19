@@ -29,6 +29,11 @@
       "description": "JDBC 驱动全称。"
     },
     {
+      "name": "aidescit.datasource.database-platform",
+      "type": "java.lang.Class",
+      "description": "Hibernate SQL 方言"
+    },
+    {
       "name": "aidescit.datasource.url",
       "type": "java.net.URL",
       "description": "数据库的 JDBC 链接"
@@ -74,7 +79,7 @@
     {
       "name": "aidescit.semester.start",
       "type": "java.util.String",
-      "description": "当前学期开学日期，请填写如下格式的日期：YYYY/MM/dd"
+      "description": "当前学期开学日期，请填写如下格式的日期：yyyy/MM/dd"
     }
   ]
 }

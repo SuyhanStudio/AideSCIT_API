@@ -1,3 +1,7 @@
+### 应用更新接口 ###
+resource/update
+
+### SpringBoot Project ###
 HELP.md
 .gradle
 build/

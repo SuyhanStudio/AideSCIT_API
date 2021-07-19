@@ -32,7 +32,10 @@ class SessionModule {
         if (userSession.existsById(username)){
             val result = userSession.getUserSession(username)
                 ?: return refresh(username, password)
-            if (result.isEffective() && !result.isExpired()){
+            if (!result.isEffective() || result.isExpired()){
+                return refresh(username, password)
+            }
+            if (check(username, result.session)){
                 return result
             }
         }
@@ -40,9 +43,33 @@ class SessionModule {
     }
 
     /**
+     * 检查 ASP.NET_SessionId 是否有效
+     * @param username 用户学号/工号
+     * @param session ASP.NET_SessionId
+     */
+    private fun check(username: String, session: String): Boolean {
+        try {
+            val url = "http://218.6.163.93:8081/xs_main.aspx?xh=$username"
+            APIModule.executeDocument(
+                url = url,
+                cookies = APIModule.buildCookies(
+                    APIModule.COOKIE_KEY to session
+                ),
+                headers = APIModule.buildHeaders(
+                    "Referer" to url
+                ),
+                method = APIModule.METHOD_GET
+            )
+        } catch (e: ServerRuntimeException){
+            return false
+        }
+        return true
+    }
+
+    /**
      * 从教务系统获取新的 ASP.NET_SessionId
      * @param username 用户学号/工号
-     * @param password 用户明文密码
+     * @param password 用户加盐密文密码，若传入 null 则从数据库调取已有数据
      * @return 返回 [UserSession]
      */
     private fun refresh(username: String, password: String?): UserSession {
@@ -79,7 +106,7 @@ class SessionModule {
     /**
      * 从教务系统获取最后一步跳转链接
      * @param username 用户学号/工号
-     * @param password 用户明文密码
+     * @param password 用户加盐密文密码，若传入 null 则从数据库调取已有数据
      * @return 返回 [UserSession]
      */
     fun getVerifyLocation(username: String, password: String? = null): UserSession {
@@ -110,9 +137,13 @@ class SessionModule {
             throw ServerRuntimeException("lt 解析失败")
         }
         val lt = input.attr("value")
-        val pwd: String = password
-            ?: userSession.getUserPassword(username)
-            ?: throw UserNotFoundException()
+        val pwd: String = password ?: userSession.getUserPassword(username)?.run {
+            return@run RSAUtil.decode(this).apply {
+                if (length <= 8){
+                    throw InvalidPasswordFormatException()
+                }
+            }.substring(8)
+        } ?: throw UserNotFoundException()
         val resp2 = APIModule.executeResponse(
             url = "http://218.6.163.95:18080/zfca/login;jsessionid=$jsId1",
             body = APIModule.buildFormBody(

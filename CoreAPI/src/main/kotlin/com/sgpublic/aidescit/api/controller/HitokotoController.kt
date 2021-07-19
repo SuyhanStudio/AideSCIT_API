@@ -13,7 +13,7 @@ class HitokotoController {
     lateinit var hitokoto: HitokotoModule
 
     @RequestMapping("/aidescit/hitokoto")
-    fun getHitokoto(token: TokenPair): Map<String, Any>{
+    fun getHitokoto(): Map<String, Any>{
         val hitokoto = this.hitokoto.get()
         return SuccessResult(
             "hitokoto" to hitokoto.content,

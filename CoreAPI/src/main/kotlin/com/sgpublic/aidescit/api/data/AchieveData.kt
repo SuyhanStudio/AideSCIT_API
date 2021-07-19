@@ -2,6 +2,7 @@ package com.sgpublic.aidescit.api.data
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.sgpublic.aidescit.api.core.util.AdvanceMap
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -18,12 +19,13 @@ class AchieveData: AdvanceMap() {
     companion object {
         class CurrentAchieve: ArrayList<CurrentAchieveItem>()
 
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         data class CurrentAchieveItem (
             var name: String = "",
-            var paperScore: Double = 0.0,
+            @JsonProperty("paper_score") var paperScore: Double? = 0.0,
             var mark: Double = 0.0,
-            var retake: Double = 0.0,
-            var rebuild: Double = 0.0,
+            var retake: Double? = 0.0,
+            var rebuild: Double? = 0.0,
             var credit: Double = 0.0,
         )
 

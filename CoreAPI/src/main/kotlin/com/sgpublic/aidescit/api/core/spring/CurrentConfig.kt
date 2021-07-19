@@ -2,6 +2,7 @@ package com.sgpublic.aidescit.api.core.spring
 
 import com.sgpublic.aidescit.api.core.spring.interceptor.SignInterceptor
 import com.sgpublic.aidescit.api.core.spring.property.SqlProperty
+import com.sgpublic.aidescit.api.core.util.Log
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -29,5 +30,11 @@ class CurrentConfig: WebMvcConfigurer {
             username(SqlProperty.USERNAME)
             password(SqlProperty.PASSWORD)
         }.build()
+    }
+
+    @DependsOn("sqlProperty")
+    @Bean(name = ["databasePlatform"])
+    fun getDatabasePlatform(): String {
+        return SqlProperty.DATABASE_PLATFORM
     }
 }
