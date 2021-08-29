@@ -302,7 +302,6 @@ class NewsModule {
      */
     private fun parseTidAndNid(item: Headlines, content: Elements): Boolean {
         val href = content.attr("href")
-        Log.d(href)
         item.tid = parseTid(href)
             ?: return false
         val matcher = Pattern.compile(

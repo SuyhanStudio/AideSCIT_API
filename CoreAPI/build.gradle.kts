@@ -10,7 +10,7 @@ plugins {
 
 group = "com.sgpublic"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = JavaVersion.VERSION_16
 
 configurations {
     compileOnly {
@@ -20,7 +20,8 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
+    maven { url = uri("https://jitpack.io") }
+    maven { url = uri("https://repo.spring.io/release") }
 }
 
 dependencies {
@@ -45,13 +46,18 @@ dependencies {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
+        jvmTarget = "16"
     }
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+//tasks.withType<BootBuildImage> {
+//    builder = "paketobuildpacks/builder:tiny"
+//    environment = mapOf("BP_NATIVE_IMAGE" to "true")
+//}
 
 tasks.bootJar {
     // 设置打包文件名称

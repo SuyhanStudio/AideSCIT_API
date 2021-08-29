@@ -182,13 +182,7 @@ class TokenUtil private constructor(private val token: TokenPair){
             }
             val header = Base64Util.encodeToString(headerPre)
 
-            val passwordPre = RSAUtil.decode(password).apply {
-                if (length <= 8) {
-                    throw InvalidPasswordFormatException()
-                }
-            }.substring(8)
-
-            val bodyPre = buildTokenBody(passwordPre, time)
+            val bodyPre = buildTokenBody(password, time)
             val accessBodyPre = bodyPre.apply {
                 put("type", "access")
             }.toString()

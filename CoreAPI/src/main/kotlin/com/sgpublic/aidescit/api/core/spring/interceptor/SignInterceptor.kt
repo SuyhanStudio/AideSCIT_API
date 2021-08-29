@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletResponse
  */
 class SignInterceptor: HandlerInterceptor {
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-//        if (!Application.DEBUG){
+        if (!Application.DEBUG){
             SignUtil.calculate(request.parameterMap)
-//        }
+        }
 
         return super.preHandle(request, response, handler)
     }

@@ -14,4 +14,8 @@ interface HeadlinesRepository: JpaRepository<Headlines, NewsIds> {
      */
     @Query("select * from `news_headline`", nativeQuery = true)
     fun getAll(): ArrayList<Headlines>
+
+//    @Suppress("SqlWithoutWhere")
+//    @Query("delete from `news_headline`", nativeQuery = true)
+//    fun removeAll()
 }

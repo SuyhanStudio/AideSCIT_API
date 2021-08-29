@@ -1,13 +1,14 @@
 package com.sgpublic.aidescit.api.controller
 
 import com.sgpublic.aidescit.api.core.spring.BaseController
+import com.sgpublic.aidescit.api.core.util.RSAUtil
 import com.sgpublic.aidescit.api.core.util.TokenUtil
 import com.sgpublic.aidescit.api.data.TokenPair
+import com.sgpublic.aidescit.api.exceptions.InvalidPasswordFormatException
 import com.sgpublic.aidescit.api.module.SessionModule
 import com.sgpublic.aidescit.api.result.FailedResult
 import com.sgpublic.aidescit.api.result.SuccessResult
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -20,7 +21,12 @@ class LoginController: BaseController() {
     @RequestMapping("/aidescit/login")
     fun login(username: String, password: String, sign: String): Map<String, Any> {
         session.get(username, password)
-        val token = TokenUtil.create(username, password)
+        val passwordPre = RSAUtil.decode(password).apply {
+            if (length <= 8) {
+                throw InvalidPasswordFormatException()
+            }
+        }.substring(8)
+        val token = TokenUtil.create(username, passwordPre)
         return SuccessResult(
             "access_token" to token.access,
             "refresh_token" to token.refresh
