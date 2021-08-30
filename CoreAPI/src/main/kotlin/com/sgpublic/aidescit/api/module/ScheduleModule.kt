@@ -3,13 +3,13 @@ package com.sgpublic.aidescit.api.module
 import com.sgpublic.aidescit.api.core.spring.property.SemesterInfoProperty
 import com.sgpublic.aidescit.api.core.util.Log
 import com.sgpublic.aidescit.api.data.ScheduleData
+import com.sgpublic.aidescit.api.data.ViewStateDocument
 import com.sgpublic.aidescit.api.exceptions.ServerRuntimeException
 import com.sgpublic.aidescit.api.exceptions.ServiceUnavailableException
 import com.sgpublic.aidescit.api.mariadb.dao.ClassChartRepository
 import com.sgpublic.aidescit.api.mariadb.dao.ClassScheduleRepository
 import com.sgpublic.aidescit.api.mariadb.domain.ClassSchedule
 import com.sgpublic.aidescit.api.mariadb.domain.UserInfo
-import org.jsoup.nodes.Document
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.regex.Pattern
@@ -73,17 +73,6 @@ class ScheduleModule {
      */
     private fun refreshStudent(user: UserInfo, year: String, semester: Short, session: String): ScheduleData {
         val url = "http://218.6.163.93:8081/tjkbcx.aspx?xh=${user.username}"
-        var viewstate = APIModule.executeDocument(
-            url = url,
-            headers = APIModule.buildHeaders(
-                "Referer" to url
-            ),
-            cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
-            ),
-            method = APIModule.METHOD_GET
-        ).viewstate
-
         var doc = APIModule.executeDocument(
             url = url,
             headers = APIModule.buildHeaders(
@@ -92,70 +81,77 @@ class ScheduleModule {
             cookies = APIModule.buildCookies(
                 APIModule.COOKIE_KEY to session
             ),
-            body = APIModule.buildFormBody(
-                "__EVENTTARGET" to "zy",
-                "__EVENTARGUMENT" to "",
-                "__LASTFOCUS" to "",
-                "__VIEWSTATE" to viewstate,
-                "__VIEWSTATEGENERATOR" to "3189F21D",
+            method = APIModule.METHOD_GET
+        )
+
+        if (!doc.checkSelectedOption("#xn", year)){
+            Log.d("课表学年未选中")
+            doc = doc.post(
+                "__EVENTTARGET" to "xn",
+                "xn" to year,
+                "xq" to doc.getSelectedOption("#xq"),
+                "nj" to doc.getSelectedOption("#nj"),
+                "xy" to doc.getSelectedOption("#xy"),
+                "zy" to doc.getSelectedOption("#zy"),
+                "kb" to doc.getSelectedOption("#kb"),
+            )
+        }
+
+        if (!doc.checkSelectedOption("#xq", semester.toString())){
+            Log.d("课表学期未选中")
+            doc = doc.post(
+                "__EVENTTARGET" to "xq",
                 "xn" to year,
                 "xq" to semester,
-                "nj" to user.grade,
-                "xy" to user.faculty,
-                "zy" to user.specialty,
-                "kb" to "",
-            ),
-            method = APIModule.METHOD_POST
+                "nj" to doc.getSelectedOption("#nj"),
+                "xy" to doc.getSelectedOption("#xy"),
+                "zy" to doc.getSelectedOption("#zy"),
+                "kb" to doc.getSelectedOption("#kb"),
+            )
+        }
+
+        doc = doc.post(
+            "__EVENTTARGET" to "zy",
+            "xn" to year,
+            "xq" to semester,
+            "nj" to user.grade,
+            "xy" to user.faculty,
+            "zy" to user.specialty,
+            "kb" to doc.getSelectedOption("#kb"),
         )
-        viewstate = doc.viewstate
 
         val className = this.classChart.getClassName(
             user.faculty, user.specialty, user.classId, user.grade
         ) ?: throw ServerRuntimeException.INTERNAL_ERROR
 
         var selected = false
-        val tableId = doc.document.select("#kb").select("option").run {
-            forEach { element ->
+        val tableId: String = doc.select("#kb").run {
+            select("option").forEach { element ->
                 if (element.text() != className){
                     return@forEach
                 }
-                if (!element.hasAttr("selected")){
+                val idString: String = element.attr("value")
+                if (idString == ""){
                     return@forEach
                 }
-                selected = true
-                return@run element.attr("value").apply {
-                    if (this == ""){
-                        throw ServerRuntimeException("tableId获取失败")
-                    }
+                if (element.hasAttr("selected")){
+                    selected = true
                 }
+                return@run idString
             }
             throw ServerRuntimeException("tableId获取失败")
         }
         if (!selected){
-            doc = APIModule.executeDocument(
-                url = url,
-                headers = APIModule.buildHeaders(
-                    "Referer" to url
-                ),
-                cookies = APIModule.buildCookies(
-                    APIModule.COOKIE_KEY to session
-                ),
-                body = APIModule.buildFormBody(
-                    "__EVENTTARGET" to "kb",
-                    "__EVENTARGUMENT" to "",
-                    "__LASTFOCUS" to "",
-                    "__VIEWSTATE" to viewstate,
-                    "__VIEWSTATEGENERATOR" to "3189F21D",
-                    "xn" to year,
-                    "xq" to semester,
-                    "nj" to user.grade,
-                    "xy" to user.faculty,
-                    "zy" to user.specialty,
-                    "kb" to tableId,
-                ),
-                method = APIModule.METHOD_POST
+            doc = doc.post(
+                "__EVENTTARGET" to "kb",
+                "xn" to year,
+                "xq" to semester,
+                "nj" to user.grade,
+                "xy" to user.faculty,
+                "zy" to user.specialty,
+                "kb" to tableId,
             )
-            doc.document.select("#kb").select("option").run {
+            doc.select("#kb").select("option").run {
                 forEach { element ->
                     if (element.text() != className){
                         return@forEach
@@ -167,7 +163,7 @@ class ScheduleModule {
                 throw ServerRuntimeException("无法选中目标课表数据")
             }
         }
-        parseSchedule(doc.document).also {
+        parseSchedule(doc).also {
             schedule.save(ClassSchedule().apply {
                 this.id = tableId
                 this.faculty = user.faculty
@@ -193,7 +189,7 @@ class ScheduleModule {
     /**
      * 解析课表数据
      */
-    private fun parseSchedule(doc: Document): ScheduleData {
+    private fun parseSchedule(doc: ViewStateDocument): ScheduleData {
         val result = ScheduleData()
         var resultCount = 0
         doc.getElementById("Table6").getElementsByTag("tbody").select("tr").forEachIndexed { trIndex, tr ->

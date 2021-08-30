@@ -1,7 +1,7 @@
 package com.sgpublic.aidescit.api.module
 
 import com.sgpublic.aidescit.api.core.util.AdvJSONObject
-import com.sgpublic.aidescit.api.data.ViewstateDocument
+import com.sgpublic.aidescit.api.data.ViewStateDocument
 import com.sgpublic.aidescit.api.exceptions.ServerRuntimeException
 import okhttp3.*
 import okio.IOException
@@ -30,10 +30,16 @@ object APIModule {
     val METHOD_POST: Int = 1
 
     /**
-     * 请求附带 cookie 键
+     * 请求附带 Cookie 键
      */
     @JvmStatic
     val COOKIE_KEY: String = "ASP.NET_SessionId"
+
+    /**
+     * 请求附带 Referer 键
+     */
+    @JvmStatic
+    val REFERER_KEY: String = "Referer"
 
     /** 获取当前时间戳 */
     @JvmStatic
@@ -83,31 +89,21 @@ object APIModule {
     }
 
     /**
-     * 创建请求并执行，返回 [ViewstateDocument]，可选检查 __VIEWSTATE
+     * 创建请求并执行，返回 [ViewStateDocument]，可选检查 __VIEWSTATE
      * @see APIModule.executeResponse
-     * @return 返回 [ViewstateDocument]
+     * @return 返回 [ViewStateDocument]
      * @throws ServerRuntimeException 当网络请求失败或检查 __VIEWSTATE 未发现时抛出。
      */
     @Throws(IOException::class, IllegalStateException::class, ServerRuntimeException::class)
-    fun executeDocument(url: String, body: FormBody? = null, headers: Headers? = null,
-                        cookies: Cookies? = null, method: Int = METHOD_GET,
-                        checkViewstate: Boolean = true): ViewstateDocument {
+    fun executeDocument(
+        url: String, body: FormBody? = null, headers: Headers? = null,
+        cookies: Cookies? = null, method: Int = METHOD_GET
+    ): ViewStateDocument {
         executeResponse(url, body, headers, cookies, method).body?.string().run {
             if (this == null){
                 throw ServerRuntimeException.NETWORK_FAILED
             }
-            val result = ViewstateDocument()
-            result.document = Jsoup.parse(this)
-            if (!checkViewstate){
-                return result
-            }
-            result.document.select("#__VIEWSTATE").attr("value").let {
-                if (it == ""){
-                    throw ServerRuntimeException.VIEWSTATE_NOT_FOUND
-                }
-                result.viewstate = it
-            }
-            return result
+            return ViewStateDocument(url, Jsoup.parse(this), cookies, headers)
         }
     }
 

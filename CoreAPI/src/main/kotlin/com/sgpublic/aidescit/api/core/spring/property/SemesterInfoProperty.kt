@@ -15,6 +15,7 @@ class SemesterInfoProperty {
     companion object {
         private var semester by Delegates.notNull<Short>()
         private lateinit var year: String
+        private var scheduleCanInquire: Boolean = true
         private var evaluation: Boolean = false
         private lateinit var start: Calendar
 
@@ -22,6 +23,8 @@ class SemesterInfoProperty {
         val SEMESTER: Short get() = semester
         @JvmStatic
         val YEAR: String get() = year
+        @JvmStatic
+        val SCHEDULE_CAN_INQUIRE: Boolean get() = scheduleCanInquire
         @JvmStatic
         val EVALUATION: Boolean get() = evaluation
         @JvmStatic

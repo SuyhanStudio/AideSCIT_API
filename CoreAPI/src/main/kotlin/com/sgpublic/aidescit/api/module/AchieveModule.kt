@@ -26,16 +26,16 @@ class AchieveModule {
     private fun refresh(username: String, year: String, semester: Short): AchieveData {
         val session = session.get(username).session
         val url = "http://218.6.163.93:8081/xscj.aspx?xh=$username"
-        val viewstate = APIModule.executeDocument(
+        var doc = APIModule.executeDocument(
             url = url,
-            cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
-            ),
             headers = APIModule.buildHeaders(
                 "Referer" to url
             ),
+            cookies = APIModule.buildCookies(
+                APIModule.COOKIE_KEY to session
+            ),
             method = APIModule.METHOD_GET
-        ).viewstate
+        )
 
         val button1 = when {
             year == "all" -> {
@@ -48,27 +48,15 @@ class AchieveModule {
                 "按学期查询"
             }
         }
-        val doc1 = APIModule.executeDocument(
-            url = url,
-            cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
-            ),
-            headers = APIModule.buildHeaders(
-                "Referer" to url
-            ),
-            body = APIModule.buildFormBody(
-                "__VIEWSTATE" to viewstate,
-                "__VIEWSTATEGENERATOR" to "17EB693E",
-                "ddlXN" to year,
-                "ddlXQ" to semester,
-                "txtQSCJ" to 0,
-                "txtZZCJ" to 100,
-                "Button1" to button1,
-            ),
-            method = APIModule.METHOD_POST
-        ).document
+        doc = doc.post(
+            "ddlXN" to year,
+            "ddlXQ" to semester,
+            "txtQSCJ" to 0,
+            "txtZZCJ" to 100,
+            "Button1" to button1
+        )
         val result = AchieveData()
-        doc1.getElementById("DataGrid1").select("tr").forEachIndexed { index, tr ->
+        doc.getElementById("DataGrid1").select("tr").forEachIndexed { index, tr ->
             if (index == 0){
                 return@forEachIndexed
             }
@@ -83,7 +71,7 @@ class AchieveModule {
             }
             result.addCurrent(item)
         }
-        doc1.getElementById("Datagrid3").select("tr").forEachIndexed { index, tr ->
+        doc.getElementById("Datagrid3").select("tr").forEachIndexed { index, tr ->
             if (index == 0){
                 return@forEachIndexed
             }

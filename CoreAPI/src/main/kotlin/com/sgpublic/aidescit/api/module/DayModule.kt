@@ -39,6 +39,7 @@ class DayModule {
             "date" to sdf.format(SemesterInfoProperty.START.time),
             "semester" to SemesterInfoProperty.SEMESTER,
             "school_year" to SemesterInfoProperty.YEAR,
+            "schedule_can_inquire" to SemesterInfoProperty.SCHEDULE_CAN_INQUIRE,
             "evaluation" to SemesterInfoProperty.EVALUATION
         ).let {
             expired = APIModule.TS + 1

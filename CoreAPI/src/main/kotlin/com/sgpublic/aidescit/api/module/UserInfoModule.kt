@@ -58,29 +58,29 @@ class UserInfoModule {
             return@run session
         }
         val url1 = "http://218.6.163.93:8081/xsgrxx.aspx?xh=$username"
-        val doc1 = APIModule.executeDocument(
+        var doc = APIModule.executeDocument(
             url = url1,
-            cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
-            ),
             headers = APIModule.buildHeaders(
                 "Referer" to url1
             ),
+            cookies = APIModule.buildCookies(
+                APIModule.COOKIE_KEY to session
+            ),
             method = APIModule.METHOD_GET
-        ).document
-        result.grade = doc1.select("#lbl_dqszj").text().run {
+        )
+        result.grade = doc.select("#lbl_dqszj").text().run {
             if (this == ""){
                 throw ServerRuntimeException("年级获取失败")
             }
             return@run toShortOrNull() ?: throw ServerRuntimeException("年级ID解析失败")
         }
-        result.name = doc1.select("#xm").text().run {
+        result.name = doc.select("#xm").text().run {
             if (this == ""){
                 throw ServerRuntimeException("姓名获取失败")
             }
             return@run this
         }
-        val lblXzb = doc1.select("#lbl_xzb").text().run {
+        val lblXzb = doc.select("#lbl_xzb").text().run {
             if (this == ""){
                 throw ServerRuntimeException("班级名称获取失败")
             }
@@ -99,31 +99,21 @@ class UserInfoModule {
                 throw ServerRuntimeException("班级ID获取失败")
             }
         }
-        val lblXy = doc1.select("#lbl_xy").text().run {
+        val lblXy = doc.select("#lbl_xy").text().run {
             if (this == ""){
                 throw ServerRuntimeException("学院名称获取失败")
             }
             return@run this
         }
 
-        val lblZymc = doc1.select("#lbl_zymc").text().run {
+        val lblZymc = doc.select("#lbl_zymc").text().run {
             if (this == ""){
                 throw ServerRuntimeException("专业名称获取失败")
             }
             return@run this
         }
-        val url2 = "http://218.6.163.93:8081/tjkbcx.aspx?xh=$username"
-        val doc2 = APIModule.executeDocument(
-            url = url2,
-            cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
-            ),
-            headers = APIModule.buildHeaders(
-                "Referer" to url2
-            ),
-            method = APIModule.METHOD_GET
-        )
-        result.faculty = doc2.document.select("#xy").select("option").run {
+        doc = doc.get("http://218.6.163.93:8081/tjkbcx.aspx?xh=$username")
+        result.faculty = doc.select("#xy").select("option").run {
             forEach { element ->
                 if (element.text() == lblXy){
                     return@run element.attr("value").toIntOrNull()
@@ -133,32 +123,16 @@ class UserInfoModule {
             throw ServerRuntimeException("学院ID获取失败：$lblXy")
         }
         val yearStart = SemesterInfoProperty.YEAR.split("-")[0].toInt()
-        var viewstate = doc2.viewstate
         for (i in 0 until 6){
             val year = "${yearStart - i}-${yearStart - i + 1}"
-            val doc3 = APIModule.executeDocument(
-                url = url2,
-                headers = APIModule.buildHeaders(
-                    "Referer" to url2
-                ),
-                cookies = APIModule.buildCookies(
-                    APIModule.COOKIE_KEY to session
-                ),
-                body = APIModule.buildFormBody(
-                    "__EVENTTARGET" to "xq",
-                    "__EVENTARGUMENT" to "",
-                    "__LASTFOCUS" to "",
-                    "__VIEWSTATE" to viewstate,
-                    "__VIEWSTATEGENERATOR" to "3189F21D",
-                    "xn" to year,
-                    "xq" to 1,
-                    "nj" to result.grade,
-                    "xy" to result.faculty,
-                ),
-                method = APIModule.METHOD_POST
+            doc = doc.post(
+                "__EVENTTARGET" to "xq",
+                "xn" to year,
+                "xq" to 1,
+                "nj" to result.grade,
+                "xy" to result.faculty,
             )
-            viewstate = doc3.viewstate
-            doc3.document.select("#zy").select("option").forEach { element ->
+            doc.select("#zy").select("option").forEach { element ->
                 if (element.text() != lblZymc){
                     return@forEach
                 }

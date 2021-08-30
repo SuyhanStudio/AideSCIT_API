@@ -71,6 +71,12 @@
       "description": "当前学年"
     },
     {
+      "name": "aidescit.semester.schedule-can-inquire",
+      "type": "java.lang.Boolean",
+      "description": "当前学期是否可查课表",
+      "default": true
+    },
+    {
       "name": "aidescit.semester.evaluation",
       "type": "java.lang.Boolean",
       "description": "当前学期教评是否开始",

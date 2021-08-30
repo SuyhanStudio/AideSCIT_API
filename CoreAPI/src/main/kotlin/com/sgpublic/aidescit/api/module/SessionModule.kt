@@ -52,11 +52,11 @@ class SessionModule {
             val url = "http://218.6.163.93:8081/xs_main.aspx?xh=$username"
             APIModule.executeDocument(
                 url = url,
-                cookies = APIModule.buildCookies(
-                    APIModule.COOKIE_KEY to session
-                ),
                 headers = APIModule.buildHeaders(
                     "Referer" to url
+                ),
+                cookies = APIModule.buildCookies(
+                    APIModule.COOKIE_KEY to session
                 ),
                 method = APIModule.METHOD_GET
             )

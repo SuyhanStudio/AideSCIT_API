@@ -2,7 +2,7 @@ package com.sgpublic.aidescit.api.module
 
 import com.sgpublic.aidescit.api.core.spring.property.SemesterInfoProperty
 import com.sgpublic.aidescit.api.data.ExamSchedule
-import org.jsoup.nodes.Document
+import com.sgpublic.aidescit.api.data.ViewStateDocument
 import org.jsoup.nodes.Element
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -16,36 +16,22 @@ class ExamScheduleModule {
             semester: Short = SemesterInfoProperty.SEMESTER): ArrayList<ExamSchedule> {
         val url = "http://218.6.163.93:8081/xskscx.aspx?xh=$username"
         val session: String = session.get(username).session
-        val doc1: Document = APIModule.executeDocument(
+        val doc: ViewStateDocument = APIModule.executeDocument(
             url = url,
-            cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
-            ),
             headers = APIModule.buildHeaders(
                 "Referer" to url
             ),
+            cookies = APIModule.buildCookies(
+                APIModule.COOKIE_KEY to session
+            ),
             method = APIModule.METHOD_GET
-        ).document
-        val xnd: Boolean = checkSelected(doc1, "xnd", year)
-        val xqd: Boolean = checkSelected(doc1, "xqd", semester)
+        )
+        val xnd: Boolean = doc.checkSelectedOption("#xnd", year)
+        val xqd: Boolean = doc.checkSelectedOption("#xqd", semester.toString())
         if (xnd && xqd){
-            return parse(doc1.getElementById("DataGrid1"))
+            return parse(doc.getElementById("DataGrid1"))
         }
         TODO("当默认未选中当前学期考试安排时逻辑待完善")
-    }
-
-    private fun checkSelected(doc: Document, id: String, value: Any): Boolean {
-        doc.select("#$id").select("option").run {
-            forEach {
-                if (it.attr("value") != value.toString()){
-                    return@forEach
-                }
-                if (it.hasAttr("selected")){
-                    return true
-                }
-            }
-            return false
-        }
     }
 
     private fun parse(doc: Element): ArrayList<ExamSchedule> {

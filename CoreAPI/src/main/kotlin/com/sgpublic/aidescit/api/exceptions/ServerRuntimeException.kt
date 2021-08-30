@@ -12,6 +12,8 @@ class ServerRuntimeException(msg: String): ServletException(msg) {
         @JvmStatic
         val VIEWSTATE_NOT_FOUND get() = ServerRuntimeException("__VIEWSTATE 获取失败")
         @JvmStatic
+        val VIEWSTATE_GENERATOR_NOT_FOUND get() = ServerRuntimeException("__VIEWSTATEGENERATOR 获取失败")
+        @JvmStatic
         val INTERNAL_ERROR get() = ServerRuntimeException("服务器内部错误")
     }
 }

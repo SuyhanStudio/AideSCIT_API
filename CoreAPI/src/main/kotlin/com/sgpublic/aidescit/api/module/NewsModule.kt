@@ -51,13 +51,12 @@ class NewsModule {
      * @see <a href="http://m.scit.cn/news.aspx">新闻类型字典获取地址</a>
      */
     private fun refreshTypeChart(): ArrayList<NewsChart> {
-        val doc1 = APIModule.executeDocument(
+        val doc = APIModule.executeDocument(
             url = "http://m.scit.cn/news.aspx",
-            method = APIModule.METHOD_GET,
-            checkViewstate = false
-        ).document
+            method = APIModule.METHOD_GET
+        )
         val types = ArrayList<NewsChart>()
-        doc1.select(".menu").select("ul").select("li").forEach {
+        doc.select(".menu").select("ul").select("li").forEach {
             val item = NewsChart()
             it.select("a").run {
                 item.tid = parseTid(this.attr("href"))
@@ -83,15 +82,14 @@ class NewsModule {
             }
         }
         val url = "http://www.scit.cn/newslist${tid}_${page / 2 + 1}.htm"
-        val doc1 = APIModule.executeDocument(
+        val doc = APIModule.executeDocument(
             url = url,
-            method = APIModule.METHOD_GET,
-            checkViewstate = false
-        ).document
+            method = APIModule.METHOD_GET
+        )
         val indexStart = 10 * (page % 2)
         val result = News.Companion.NewsList()
         val pattern = Pattern.compile("_(\\d*)\\.")
-        doc1.select(".newslist").select("ul").select("li").forEachIndexed { index, element ->
+        doc.select(".newslist").select("ul").select("li").forEachIndexed { index, element ->
             if (result.hasNext || index < indexStart){
                 return@forEachIndexed
             }
@@ -142,13 +140,12 @@ class NewsModule {
      */
     private fun refreshNewsById(tid: Int, nid: Int): News {
         val url = "http://www.scit.cn/newsli${tid}_${nid}.htm"
-        val doc1 = APIModule.executeDocument(
+        val doc = APIModule.executeDocument(
             url = url,
-            method = APIModule.METHOD_GET,
-            checkViewstate = false
-        ).document
+            method = APIModule.METHOD_GET
+        )
         val item = News()
-        item.title = doc1.select(".news_title").text().run {
+        item.title = doc.select(".news_title").text().run {
             if (this == ""){
                 throw ServerRuntimeException("新闻标题解析失败：$url")
             }
@@ -161,7 +158,7 @@ class NewsModule {
             }
             return@run result
         }
-        item.createTime = doc1.select(".news_time").text().run {
+        item.createTime = doc.select(".news_time").text().run {
             if (this == ""){
                 throw ServerRuntimeException("新闻创建时间获取失败：$url")
             }
@@ -172,7 +169,7 @@ class NewsModule {
             return@run newsTime[0]
         }
         val images = ArrayList<String>()
-        doc1.select("p").forEach {
+        doc.select("p").forEach {
             if (images.size >= 3){
                 return@forEach
             }
@@ -210,7 +207,7 @@ class NewsModule {
                 return@let summary
             }
         }
-        doc1.select("img").forEach {
+        doc.select("img").forEach {
             if (images.size >= 3){
                 return@forEach
             }
@@ -263,12 +260,11 @@ class NewsModule {
      */
     private fun refreshHeadlines(): ArrayList<Headlines> {
         val result = ArrayList<Headlines>()
-        val doc1 = APIModule.executeDocument(
+        val doc = APIModule.executeDocument(
             url = "http://m.scit.cn/",
-            method = APIModule.METHOD_GET,
-            checkViewstate = false
-        ).document
-        doc1.select(".index_top_news_newslist").forEach {
+            method = APIModule.METHOD_GET
+        )
+        doc.select(".index_top_news_newslist").forEach {
             val item = Headlines()
             it.select("a").let { content ->
                 if (!parseTidAndNid(item, content)){
@@ -279,7 +275,7 @@ class NewsModule {
             }
             result.add(item)
         }
-        doc1.select(".index_gkyw_news_item_one").forEach {
+        doc.select(".index_gkyw_news_item_one").forEach {
             val item = Headlines()
             it.select("a").let { content ->
                 if (!parseTidAndNid(item, content)){
