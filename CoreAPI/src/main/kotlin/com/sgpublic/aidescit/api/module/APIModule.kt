@@ -83,6 +83,7 @@ object APIModule {
             }
         }
         request.url(urlFinal.toString())
+
         client.newCall(request.build()).execute().let {
             return it
         }

@@ -47,20 +47,26 @@ class ViewStateDocument(
     @Throws(IOException::class, IllegalStateException::class, ServerRuntimeException::class)
     fun post(vararg pairs: Pair<String, Any>): ViewStateDocument {
         val body = mutableMapOf(*pairs)
-        return APIModule.executeDocument(
-            url, FormBody.Builder().apply {
-                body.forEach {
-                    add(it.key, it.value.toString())
-                }
-                if (body["__LASTFOCUS"] != null){
-                    getLastFocus()?.let {
-                        add("__LASTFOCUS", it)
-                    }
-                }
-                add("__VIEWSTATE", getViewState())
-                add("__VIEWSTATEGENERATOR", getGenerator())
-            }.build(), headers, cookies, APIModule.METHOD_POST
-        )
+        return APIModule.executeDocument(url, FormBody.Builder().apply {
+            getEventArgument()?.let {
+                add("__EVENTARGUMENT", it)
+            }
+            getLastFocus()?.let {
+                add("__LASTFOCUS", it)
+            }
+            add("__VIEWSTATE", getViewState())
+            add("__VIEWSTATEGENERATOR", getGenerator())
+            body.forEach { (key, value) ->
+                add(key, value.toString())
+            }
+        }.build(), headers, cookies, APIModule.METHOD_POST)
+    }
+
+    /**
+     * 获取当前请求的 #__EVENTARGUMENT
+     */
+    private fun getEventArgument(): String? {
+        return getAttrValue("#__EVENTARGUMENT")
     }
 
     /**
