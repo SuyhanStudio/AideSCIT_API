@@ -96,6 +96,7 @@ class SessionModule {
             }
             return@run substring(18, length - 32)
         }
+        resp.close()
 
         result.id = username
         result.password = pwd
@@ -191,6 +192,7 @@ class SessionModule {
             return@run substring(11, length - 8)
         }
         val location2 = headers2["Location"] ?: throw ServerRuntimeException("第二次跳转失败")
+        resp3.close()
         val resp4 = APIModule.executeResponse(
             url = location2,
             cookies = APIModule.buildCookies(
@@ -202,6 +204,7 @@ class SessionModule {
         )
         val headers3 = resp4.headers
         val location3 = headers3["Location"] ?: throw ServerRuntimeException("第三次跳转失败")
+        resp4.close()
         val resp5 = APIModule.executeResponse(
             url = location3,
             cookies = APIModule.buildCookies(
@@ -235,6 +238,7 @@ class SessionModule {
             method = APIModule.METHOD_GET
         )
         val headers4 = resp6.headers
+        resp6.close()
         val location5 = headers4["Location"] ?: throw ServerRuntimeException("第二次跳转失败")
         result.verifyLocation = location5
         return result

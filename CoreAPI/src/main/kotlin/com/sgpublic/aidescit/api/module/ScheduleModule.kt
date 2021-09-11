@@ -163,7 +163,7 @@ class ScheduleModule {
                 throw ServerRuntimeException("无法选中目标课表数据")
             }
         }
-        parseSchedule(doc).also {
+        parseSchedule(doc).let {
             schedule.save(ClassSchedule().apply {
                 this.id = tableId
                 this.faculty = user.faculty
@@ -192,44 +192,30 @@ class ScheduleModule {
     private fun parseSchedule(doc: ViewStateDocument): ScheduleData {
         val result = ScheduleData()
         var resultCount = 0
-        doc.getElementById("Table6").getElementsByTag("tbody").select("tr").forEachIndexed { trIndex, tr ->
-            tr.select("td").forEachIndexed tdFor@{ tdIndex, td ->
-                val html: String = td.html().replace("\n", "").run {
-                    return@run Pattern.compile("<font color=\"red\">(.*?)</font>")
-                        .matcher(this).replaceAll("")
-                }
-
-                if (html == "&nbsp;") {
+        val classIndexPattern = Pattern.compile("(0|[1-9][0-9]*)")
+        val classInfoPattern = Pattern.compile("<font color=\"red\">(.*?)</font>")
+        val trs = doc.getElementById("Table6")
+            .getElementsByTag("tbody")
+            .select("tr")
+        trs.forEachIndexed trFor@{ trIndex, tr ->
+            val tds = tr.select("td")
+            if (tds.size < 8){
+                return@trFor
+            }
+            val tdIndexVar = tds.size - 8
+            val classIndexMatcher = classIndexPattern.matcher(tds[tdIndexVar].text())
+            if (!classIndexMatcher.find()){
+                return@trFor
+            }
+            if ((classIndexMatcher.group(0).toIntOrNull() ?: 0) % 2 == 0){
+                return@trFor
+            }
+            tds.forEachIndexed tdFor@{ tdIndex, td ->
+                val classInfo = td.html().replace("\n", "")
+                if (!classInfo.contains("<br>")){
                     return@tdFor
                 }
-                if (td.attr("rowspan") != "2" || html.split("<br>").size < 2) {
-                    return@tdFor
-                }
-                val positionEntry = when(tdIndex - trIndex / 2 % 2) {
-                    1 -> result.monday
-                    2 -> result.tuesday
-                    3 -> result.wednesday
-                    4 -> result.thursday
-                    5 -> result.friday
-                    6 -> result.saturday
-                    7 -> result.sunday
-                    else -> {
-                        throw ServerRuntimeException.INTERNAL_ERROR
-                    }
-                }.run {
-                    return@run when(trIndex / 2){
-                        1 -> am1
-                        2 -> am2
-                        3 -> pm1
-                        4 -> pm2
-                        5 -> ev
-                        else -> {
-                            Log.d(trIndex / 2)
-                            throw ServerRuntimeException.INTERNAL_ERROR
-                        }
-                    }
-                }
-                html.split("<br><br><br>").forEach { content ->
+                classInfoPattern.matcher(classInfo).replaceAll("").split("<br><br><br>").forEach { content ->
                     val item = ScheduleData.Companion.ScheduleItem().apply {
                         val singleData = content.split("<br>")
                         this.name = singleData[0]
@@ -264,12 +250,35 @@ class ScheduleModule {
                         this.teacher = singleData[2]
                         this.room = singleData[3]
                     }
-                    if (positionEntry.contains(item)){
-                        positionEntry[positionEntry.indexOf(item)].range.addAll(item.range)
-                    } else {
-                        positionEntry.add(item)
+                    val classEntry = when(tdIndex + 1 - tdIndexVar) {
+                        2 -> result.monday
+                        3 -> result.tuesday
+                        4 -> result.wednesday
+                        5 -> result.thursday
+                        6 -> result.friday
+                        7 -> result.saturday
+                        8 -> result.sunday
+                        else -> {
+                            return@tdFor
+                        }
+                    }.run {
+                        return@run when(trIndex){
+                            2 -> am1
+                            4 -> am2
+                            6 -> pm1
+                            8 -> pm2
+                            10 -> ev
+                            else -> {
+                                return@trFor
+                            }
+                        }
                     }
-                    resultCount++
+                    if (classEntry.contains(item)){
+                        classEntry[classEntry.indexOf(item)].range.addAll(item.range)
+                    } else {
+                        classEntry.add(item)
+                        resultCount++
+                    }
                 }
             }
         }
