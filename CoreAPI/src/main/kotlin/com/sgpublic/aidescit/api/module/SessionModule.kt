@@ -2,6 +2,7 @@ package com.sgpublic.aidescit.api.module
 
 import com.sgpublic.aidescit.api.core.util.Log
 import com.sgpublic.aidescit.api.core.util.RSAUtil
+import com.sgpublic.aidescit.api.core.util.advMapOf
 import com.sgpublic.aidescit.api.exceptions.InvalidPasswordFormatException
 import com.sgpublic.aidescit.api.exceptions.ServerRuntimeException
 import com.sgpublic.aidescit.api.exceptions.UserNotFoundException
@@ -31,15 +32,15 @@ class SessionModule {
     fun get(username: String, password: String? = null): UserSession {
         if (userSession.existsById(username)){
             val result = userSession.getUserSession(username)
-                ?: return refresh(username, password)
+                ?: return refreshSession(username, password)
             if (!result.isEffective() || result.isExpired()){
-                return refresh(username, password)
+                return refreshSession(username, password)
             }
-            if (check(username, result.session)){
+            if (checkSession(username, result.session)){
                 return result
             }
         }
-        return refresh(username, password)
+        return refreshSession(username, password)
     }
 
     /**
@@ -47,23 +48,23 @@ class SessionModule {
      * @param username 用户学号/工号
      * @param session ASP.NET_SessionId
      */
-    private fun check(username: String, session: String): Boolean {
+    private fun checkSession(username: String, session: String): Boolean {
         try {
             val url = "http://218.6.163.93:8081/xs_main.aspx?xh=$username"
-            APIModule.executeDocument(
+            val doc = APIModule.executeDocument(
                 url = url,
                 headers = APIModule.buildHeaders(
                     "Referer" to url
                 ),
                 cookies = APIModule.buildCookies(
-                    APIModule.COOKIE_KEY to session
+                    APIModule.Cookies.SESSION_ID to session
                 ),
                 method = APIModule.METHOD_GET
             )
+            return doc.select("#lt").size != 0
         } catch (e: ServerRuntimeException){
             return false
         }
-        return true
     }
 
     /**
@@ -72,7 +73,7 @@ class SessionModule {
      * @param password 用户加盐密文密码，若传入 null 则从数据库调取已有数据
      * @return 返回 [UserSession]
      */
-    private fun refresh(username: String, password: String?): UserSession {
+    private fun refreshSession(username: String, password: String?): UserSession {
         Log.d("刷新 ASP.NET_SessionId", username)
         val pwd: String = password
             ?: userSession.getUserPassword(username)
@@ -82,12 +83,12 @@ class SessionModule {
                 throw InvalidPasswordFormatException()
             }
         }.substring(8)
-        val result = getVerifyLocation(username, passwordDecrypted)
-        val resp = APIModule.executeResponse(
+        val result = getSpringboardLocation(username, passwordDecrypted)
+        val resp1 = APIModule.executeResponse(
             url = result.verifyLocation,
             method = APIModule.METHOD_GET
         )
-        result.session = resp.headers["Set-Cookie"].run {
+        result.session = resp1.headers["Set-Cookie"].run {
             if (this == null){
                 throw ServerRuntimeException("ASP.NET_SessionId 获取失败")
             }
@@ -96,11 +97,204 @@ class SessionModule {
             }
             return@run substring(18, length - 32)
         }
-        resp.close()
+        val location1 = resp1.header("Location")
+            ?: throw ServerRuntimeException("第一次跳转失败")
+        resp1.close()
+
+        APIModule.executeDocument(
+            url = "http://218.6.163.93:8081$location1",
+            method = APIModule.METHOD_GET,
+            cookies = APIModule.buildCookies(
+                APIModule.Cookies.SESSION_ID to result.session
+            )
+        )
 
         result.id = username
         result.password = pwd
         userSession.save(result)
+        return result
+    }
+
+    /**
+     * 从办事大厅获取教务系统跳转链接
+     * @param username 用户学号/工号
+     * @param password 用户加盐密文密码，若传入 null 则从数据库调取已有数据
+     * @return 返回 [UserSession]
+     */
+    fun getSpringboardLocation(username: String, password: String? = null): UserSession {
+        val result = UserSession()
+
+        val param1 = advMapOf(
+            "universityId" to 100831,
+            "appKey" to "uap-web-key",
+            "timestamp" to APIModule.TS_FULL,
+            "nonce" to APIModule.NONCE,
+            "clientCategory" to "PC",
+            "appCode" to "officeHallApplicationCode",
+            "equipmentName" to "工科助手(sgpublic2002@gmail.com)",
+            "equipmentId" to "SpringBoot",
+            "equipmentVersion" to "1.0.0-alpha01",
+            "accountNumber" to username,
+            "loginWay" to "ACCOUNT"
+        )
+        APIModule.getSecretParam(param1)
+        val resp1 = APIModule.executeResponse(
+            url = "http://ai.scit.cn/ump/common/login/getLoginTicket",
+            method = APIModule.METHOD_POST,
+            body = APIModule.buildFormBody(param1)
+        )
+        val loginTicket: String = resp1.jsonBody().run {
+            if (getString("code") != "40001"){
+                Log.d(this)
+                throw ServerRuntimeException.NETWORK_FAILED
+            }
+            return@run getJSONObject("content").getString("ticket")
+        }
+
+        val pwd: String = password ?: userSession.getUserPassword(username)?.run {
+            return@run RSAUtil.decode(this).apply {
+                if (length <= 8){
+                    throw InvalidPasswordFormatException()
+                }
+            }.substring(8)
+        } ?: throw UserNotFoundException()
+        val param2 = advMapOf(
+            "universityId" to 100831,
+            "password" to pwd,
+            "appKey" to "uap-web-key",
+            "timestamp" to APIModule.TS_FULL,
+            "nonce" to APIModule.NONCE,
+            "clientCategory" to "PC",
+        )
+        APIModule.getSecretParam(param2)
+        param2.remove("password")
+        val resp2 = APIModule.executeResponse(
+            url = "http://ai.scit.cn/ump/pc/login/account/checkAccount/$loginTicket",
+            method = APIModule.METHOD_POST,
+            body = APIModule.buildFormBody(param2)
+        )
+        val resp2json = resp2.jsonBody()
+        if (resp2json.getString("code") == "20003"){
+            throw WrongPasswordException(username)
+        }
+        if (resp2json.getString("code") != "40001"){
+            Log.d(resp2json)
+            throw ServerRuntimeException.NETWORK_FAILED
+        }
+        result.cookie = resp2.header(
+            "Set-Cookie", ""
+        )!!.run {
+            substring(28, length - 61)
+        }
+
+        val param3 = advMapOf(
+            "universityId" to 100831,
+            "appKey" to "uap-web-key",
+            "timestamp" to APIModule.TS_FULL,
+            "nonce" to APIModule.NONCE,
+            "clientCategory" to "PC",
+        )
+        APIModule.getSecretParam(param3)
+        val resp3 = APIModule.executeResponse(
+            url = "http://ai.scit.cn/ump/pc/login/uap/sso/$loginTicket",
+            method = APIModule.METHOD_POST,
+            body = APIModule.buildFormBody(param3),
+            cookies = APIModule.buildCookies(
+                "AUTHENTICATION_NORMAL_LOGIN" to result.cookie
+            )
+        ).jsonBody()
+        if (resp3.getString("code") != "40001"){
+            Log.d(resp3)
+            throw ServerRuntimeException.NETWORK_FAILED
+        }
+        val location = resp3.getJSONObject("content").getString("redirectUrl")
+        val hallTicket = location.substring(56, location.length - 11)
+
+        val resp4 = APIModule.executeResponse(
+            url = "http://ai.scit.cn/ump/officeHallPageHome/uap/check/$hallTicket",
+            method = APIModule.METHOD_GET,
+            body = APIModule.buildFormBody(
+                "universityId" to 100831,
+                "appKey" to "pc-officeHall",
+                "timestamp" to APIModule.TS_FULL,
+                "nonce" to APIModule.NONCE,
+                "equipmentName" to "工科助手(sgpublic2002@gmail.com)",
+                "clientCategory" to "PC"
+            ),
+            cookies = APIModule.buildCookies(
+                "AUTHENTICATION_NORMAL_LOGIN" to result.cookie,
+                "userInfo" to advMapOf(
+                    "operatorId" to "YK0000010000200003",
+                    "userType" to "STUDENT",
+                    "userId" to null
+                ).toString()
+            )
+        ).jsonBody()
+        if (resp4.getString("code") != "40001"){
+            Log.d(resp4)
+            throw ServerRuntimeException.NETWORK_FAILED
+        }
+        val hallToken = resp4.getJSONObject("content").getString("token")
+
+        val resp5 = APIModule.executeResponse(
+            url = "http://ai.scit.cn/ump/user/front/info/pc",
+            method = APIModule.METHOD_POST,
+            body = APIModule.buildJsonBody(
+                "universityId" to 100831,
+                "appKey" to "pc-officeHall",
+                "timestamp" to APIModule.TS_FULL,
+                "nonce" to APIModule.NONCE,
+                "clientCategory" to "PC"
+            ),
+            headers = APIModule.buildHeaders(
+                "token" to hallToken
+            ),
+            cookies = APIModule.buildCookies(
+                "AUTHENTICATION_NORMAL_LOGIN" to result.cookie,
+                "userInfo" to advMapOf(
+                    "operatorId" to "YK0000010000200003",
+                    "userType" to "STUDENT",
+                    "userId" to null
+                ).toString(),
+                "ump_token_pc-officeHall" to hallToken
+            )
+        ).jsonBody()
+        if (resp5.getString("code") != "40001") {
+            Log.d(resp5)
+            throw ServerRuntimeException.NETWORK_FAILED
+        }
+
+        val resp6 = APIModule.executeResponse(
+            url = "http://ai.scit.cn/ump/officeHall/getApplicationUrl",
+            method = APIModule.METHOD_GET,
+            body = APIModule.buildFormBody(
+                "universityId" to 100831,
+                "appKey" to "pc-officeHall",
+                "timestamp" to APIModule.TS_FULL,
+                "nonce" to APIModule.NONCE,
+                "clientCategory" to "PC",
+                "applicationCode" to "oboR46",
+                "userType" to "STUDENT"
+            ),
+            headers = APIModule.buildHeaders(
+                "token" to hallToken
+            ),
+            cookies = APIModule.buildCookies(
+                "AUTHENTICATION_NORMAL_LOGIN" to result.cookie,
+                "userInfo" to advMapOf(
+                    "operatorId" to "YK0000010000200003",
+                    "userType" to "STUDENT",
+                    "userId" to null
+                ).toString(),
+                "ump_token_pc-officeHall" to hallToken
+            )
+        ).jsonBody()
+        if (resp6.getString("code") != "40001"){
+            Log.d(resp6)
+            throw ServerRuntimeException.NETWORK_FAILED
+        }
+        result.verifyLocation = resp6.getJSONObject("content").getString("redirectUrl")
+
         return result
     }
 
@@ -110,6 +304,10 @@ class SessionModule {
      * @param password 用户加盐密文密码，若传入 null 则从数据库调取已有数据
      * @return 返回 [UserSession]
      */
+    @Deprecated("旧系统已关闭", ReplaceWith(
+        "getSpringboardLocation(username, password)",
+        "com.sgpublic.aidescit.api.module.SessionModule"
+    ))
     fun getVerifyLocation(username: String, password: String? = null): UserSession {
         val result = UserSession()
         val resp1 = APIModule.executeResponse(

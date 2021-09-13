@@ -1,13 +1,13 @@
 package com.sgpublic.aidescit.api.result
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.sgpublic.aidescit.api.core.util.AdvanceMap
+import com.sgpublic.aidescit.api.core.util.AdvMap
 
 /**
  * 处理成功结果封装
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-class SuccessResult(vararg pairs: Pair<String, Any>) : AdvanceMap() {
+class SuccessResult(vararg pairs: Pair<String, Any>) : AdvMap() {
     init {
         put("code", 200)
         put("message", "success.")

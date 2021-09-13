@@ -18,7 +18,7 @@ class DayModule {
     /**
      * 获取信息
      */
-    fun get(): Map<String, Any> {
+    fun get(): Map<String, Any?> {
         return if (expired - APIModule.TS > 0){
             result
         } else {

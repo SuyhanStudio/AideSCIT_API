@@ -25,22 +25,22 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.5.4")
+    implementation("org.springframework.boot:spring-boot-starter-web:2.5.4")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:2.5.4")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client:2.7.3")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:2.5.4")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4")
 
     // okhttp 用于网络访问
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
     // json 解析
     implementation("org.json:json:20210307")
     // html 解析
-    implementation("org.jsoup:jsoup:1.13.1")
+    implementation("org.jsoup:jsoup:1.14.2")
 }
 
 tasks.withType<KotlinCompile> {
@@ -61,5 +61,5 @@ tasks.withType<Test> {
 
 tasks.bootJar {
     // 设置打包文件名称
-    archiveFileName.set("SCITEduTool_API_SpringBoot.jar")
+    archiveFileName.set("AideSCIT_API_SpringBoot.jar")
 }

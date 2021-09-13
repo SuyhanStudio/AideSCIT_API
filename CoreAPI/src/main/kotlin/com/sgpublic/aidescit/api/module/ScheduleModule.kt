@@ -79,7 +79,7 @@ class ScheduleModule {
                 "Referer" to url
             ),
             cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
+                APIModule.Cookies.SESSION_ID to session
             ),
             method = APIModule.METHOD_GET
         )
@@ -95,9 +95,12 @@ class ScheduleModule {
                 "zy" to doc.getSelectedOption("#zy"),
                 "kb" to doc.getSelectedOption("#kb"),
             )
+            if (!doc.checkSelectedOption("#xn", year)){
+                throw ServerRuntimeException("无法选中目标学年")
+            }
         }
 
-        if (!doc.checkSelectedOption("#xq", semester.toString())){
+        if (!doc.checkSelectedOption("#xq", semester.toString(10))){
             Log.d("课表学期未选中")
             doc = doc.post(
                 "__EVENTTARGET" to "xq",
@@ -108,17 +111,42 @@ class ScheduleModule {
                 "zy" to doc.getSelectedOption("#zy"),
                 "kb" to doc.getSelectedOption("#kb"),
             )
+            if (!doc.checkSelectedOption("#xq", semester.toString(10))){
+                throw ServerRuntimeException("无法选中目标学期")
+            }
         }
 
-        doc = doc.post(
-            "__EVENTTARGET" to "zy",
-            "xn" to year,
-            "xq" to semester,
-            "nj" to user.grade,
-            "xy" to user.faculty,
-            "zy" to user.specialty,
-            "kb" to doc.getSelectedOption("#kb"),
-        )
+        if (!doc.checkSelectedOption("#xy", user.faculty.toString(10))) {
+            Log.d("课表学院未选中")
+            doc = doc.post(
+                "__EVENTTARGET" to "zy",
+                "xn" to year,
+                "xq" to semester,
+                "nj" to user.grade,
+                "xy" to user.faculty,
+                "zy" to doc.getSelectedOption("#zy"),
+                "kb" to doc.getSelectedOption("#kb"),
+            )
+            if (!doc.checkSelectedOption("#xy", user.faculty.toString(10))) {
+                throw ServerRuntimeException("无法选中目标学院")
+            }
+        }
+
+        if (!doc.checkSelectedOption("#zy", user.specialty.toString(10))) {
+            Log.d("课表专业未选中")
+            doc = doc.post(
+                "__EVENTTARGET" to "zy",
+                "xn" to year,
+                "xq" to semester,
+                "nj" to user.grade,
+                "xy" to user.faculty,
+                "zy" to user.specialty,
+                "kb" to doc.getSelectedOption("#kb"),
+            )
+            if (!doc.checkSelectedOption("#zy", user.specialty.toString(10))) {
+                throw ServerRuntimeException("无法选中目标专业")
+            }
+        }
 
         val className = this.classChart.getClassName(
             user.faculty, user.specialty, user.classId, user.grade
@@ -194,7 +222,7 @@ class ScheduleModule {
         var resultCount = 0
         val classIndexPattern = Pattern.compile("(0|[1-9][0-9]*)")
         val classInfoPattern = Pattern.compile("<font color=\"red\">(.*?)</font>")
-        val trs = doc.getElementById("Table6")
+        val trs = doc.getElementById("Table6")!!
             .getElementsByTag("tbody")
             .select("tr")
         trs.forEachIndexed trFor@{ trIndex, tr ->

@@ -19,7 +19,7 @@ class ExamController: BaseController() {
     fun getExam(
         @RequestParam(name = "access_token") token: String,
         semester: SemesterInfo, sign: String
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         val check = checkAccessToken(token)
         val result = exam.get(check.getUsername(), semester.year, semester.semester)
         if (result.isEmpty()){

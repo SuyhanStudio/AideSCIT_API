@@ -1,13 +1,24 @@
 package com.sgpublic.aidescit.api.module
 
-import com.sgpublic.aidescit.api.core.util.AdvJSONObject
+import com.sgpublic.aidescit.api.Application
+import com.sgpublic.aidescit.api.core.spring.property.KeyProperty
+import com.sgpublic.aidescit.api.core.util.*
 import com.sgpublic.aidescit.api.data.ViewStateDocument
 import com.sgpublic.aidescit.api.exceptions.ServerRuntimeException
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import okio.IOException
+import org.json.JSONArray
 import org.json.JSONObject
 import org.jsoup.Jsoup
+import java.security.KeyFactory
+import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.RSAPublicKeySpec
+import java.security.spec.X509EncodedKeySpec
 import java.util.concurrent.TimeUnit
+import javax.crypto.Cipher
+import kotlin.math.pow
 
 /** 请求操作模块 */
 object APIModule {
@@ -28,22 +39,25 @@ object APIModule {
     /** 请求方法 POST */
     @JvmStatic
     val METHOD_POST: Int = 1
-
-    /**
-     * 请求附带 Cookie 键
-     */
-    @JvmStatic
-    val COOKIE_KEY: String = "ASP.NET_SessionId"
-
     /**
      * 请求附带 Referer 键
      */
     @JvmStatic
-    val REFERER_KEY: String = "Referer"
-
-    /** 获取当前时间戳 */
+    val REFERER: String = "Referer"
+    /**
+     * 请求附带 Content-Type 键
+     */
     @JvmStatic
-    val TS: Long get() = System.currentTimeMillis() / 1000
+    val CONTENT_TYPE: String = "Content-Type"
+
+    /** 获取当前时间戳，秒 */
+    @JvmStatic
+    val TS: Long get() = TS_FULL / 1000
+    /** 获取当前时间戳，毫秒 */
+    @JvmStatic
+    val TS_FULL: Long get() = System.currentTimeMillis()
+
+    val NONCE: Long get() = (10.0.pow(13) * (Math.random() + 1)).toLong()
 
     /**
      * 创建请求并执行
@@ -58,7 +72,7 @@ object APIModule {
      */
     @JvmStatic
     @Throws(IOException::class, IllegalStateException::class)
-    fun executeResponse(url: String, body: FormBody? = null, headers: Headers? = null,
+    fun executeResponse(url: String, body: RequestBody? = null, headers: Headers? = null,
                         cookies: Cookies? = null, method: Int = METHOD_GET): Response {
         val request = Request.Builder()
         headers?.let {
@@ -69,20 +83,57 @@ object APIModule {
         }
         val urlFinal = StringBuilder(url)
         body?.let {
-            if (method == METHOD_GET){
-                urlFinal.append("?")
-                for (index in 0 until it.size){
-                    if (index != 0){
-                        urlFinal.append("&")
+            if (it is FormBody) {
+                if (method == METHOD_GET){
+                    urlFinal.append("?")
+                    for (index in 0 until it.size){
+                        if (index != 0){
+                            urlFinal.append("&")
+                        }
+                        urlFinal.append("${it.name(index)}=${it.value(index)}")
                     }
-                    urlFinal.append("${body.name(index)}=${body.value(index)}")
+                } else {
+                    request.post(it)
+                    request.addHeader("Content-Type", "application/x-www-form-urlencoded")
                 }
-            } else if (method == METHOD_POST){
-                request.post(it)
-                request.addHeader("Content-Type", "application/x-www-form-urlencoded")
+            } else {
+                if (method == METHOD_GET){
+                    urlFinal.append("?$it")
+                } else {
+                    request.post(it)
+                    request.addHeader("Content-Type", "application/json;charset=UTF-8")
+                }
             }
         }
         request.url(urlFinal.toString())
+        if (Application.DEBUG){
+            val log = StringBuilder("网络请求\n")
+                .append(if (method == METHOD_POST) "POST " else "GET ")
+                .append(url)
+            headers?.let {
+                log.append("\n[header]")
+                it.forEach {
+                    log.append("\n  ${it.first}: ${it.second}")
+                }
+            }
+            cookies?.let {
+                if (headers == null) {
+                    log.append("\n[header]")
+                }
+                log.append("\n  cookie: $it")
+            }
+            body?.let {
+                log.append("\n[body]")
+                if (it is FormBody){
+                    for (index in 0 until it.size) {
+                        log.append("\n  ${it.name(index)}=${it.value(index)}")
+                    }
+                } else {
+                    log.append("\n  $it")
+                }
+            }
+            Log.t(log.toString())
+        }
 
         client.newCall(request.build()).execute().let {
             return it
@@ -123,18 +174,57 @@ object APIModule {
     }
 
     /**
-     * 创建请求表单
+     * 创建 Form 表单
      * @param pairs 表单键值对
      * @return 返回 [FormBody]
      */
     @JvmStatic
-    fun buildFormBody(vararg pairs: Pair<String, Any>): FormBody {
+    fun buildFormBody(vararg pairs: Pair<String, Any?>): FormBody {
         return FormBody.Builder().run {
             for ((key, value) in pairs) {
                 add(key, value.toString())
             }
             build()
         }
+    }
+
+    /**
+     * 创建 JSON 表单
+     * @param pairs 表单键值对
+     * @return 返回 [FormBody]
+     */
+    @JvmStatic
+    fun buildJsonBody(vararg pairs: Pair<String, Any?>): RequestBody {
+        return advMapOf(*pairs).toString().toRequestBody(
+            "application/json".toMediaType()
+        )
+    }
+
+    /**
+     * 创建请求表单
+     * @param map 表单键值对
+     * @return 返回 [FormBody]
+     */
+    @JvmStatic
+    fun buildFormBody(map: LinkedHashMap<String, Any?>): FormBody {
+        return FormBody.Builder().run {
+            for ((key, value) in map) {
+                add(key, value.toString())
+            }
+            build()
+        }
+    }
+
+    /**
+     * 创建 JSON 表单
+     * @param map 表单键值对
+     * @return 返回 [FormBody]
+     */
+    @JvmStatic
+    fun buildJsonBody(map: LinkedHashMap<String, Any?>): RequestBody {
+        return map.toString().toRequestBody(
+            "application/json".toMediaType()
+        )
     }
 
     /**
@@ -169,6 +259,14 @@ object APIModule {
      * Cookies 对象封装
      */
     class Cookies private constructor(private val cookies: Map<String, ArrayList<Any>>){
+        companion object {
+            /**
+             * 请求附带 Cookie 键
+             */
+            @JvmStatic
+            val SESSION_ID: String = "ASP.NET_SessionId"
+        }
+
         override fun toString(): String {
             return StringBuilder().apply {
                 for ((key, values) in cookies){
@@ -192,4 +290,46 @@ object APIModule {
             fun build() = Cookies(cookies)
         }
     }
+
+    @JvmStatic
+    fun getSecretParam(data: AdvMap){
+        val dataString = data.toSortedString()
+        var index = 0
+        val result = ArrayList<String>()
+        while (true) {
+            val start = index * 30
+            if (start > dataString.length){
+                break
+            }
+            val end = if (dataString.length < ++index * 30) {
+                dataString.length
+            } else { index * 30 }
+            val subString = dataString.substring(start, end)
+            result.add(RSAUtil.encode(subString, secretPublicKey))
+        }
+        data.put("secretParam" to result.toJsonString())
+    }
+
+    private val secretPublicKey: Cipher get() {
+        val cp = Cipher.getInstance("RSA/ECB/PKCS1Padding")
+        val key = KeyFactory.getInstance("RSA")
+        cp.init(Cipher.ENCRYPT_MODE, key.generatePublic(
+            X509EncodedKeySpec(Base64Util.decode(
+            "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDACwPDxYycdCiNeblZa9LjvDzb" +
+                    "iZU1vc9gKRcG/pGjZ/DJkI4HmoUE2r/o6SfB5az3s+H5JDzmOMVQ63hD7LZQGR4k" +
+                    "3iYWnCg3UpQZkZEtFtXBXsQHjKVJqCiEtK+gtxz4WnriDjf+e/CxJ7OD03e7sy5N" +
+                    "Y/akVmYNtghKZzz6jwIDAQAB"
+            ))
+        ))
+        return cp
+    }
+}
+
+fun ArrayList<String>.toJsonString(): String {
+    return JSONArray(this).toString()
+}
+
+fun Response.jsonBody(): JSONObject {
+    val result = this.body?.string() ?: throw ServerRuntimeException.NETWORK_FAILED
+    return JSONObject(result)
 }

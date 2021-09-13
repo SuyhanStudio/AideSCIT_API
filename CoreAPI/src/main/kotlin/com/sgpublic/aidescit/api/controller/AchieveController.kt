@@ -22,7 +22,7 @@ class AchieveController: BaseController() {
     fun getAchieve(
         @RequestParam(name = "access_token") token: String,
         semester: SemesterInfo, sign: String
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         val check = checkAccessToken(token)
         if (info.get(check.getUsername()).isTeacher()){
             return FailedResult(-500, "什么？老师还有成绩单？(°Д°≡°Д°)")

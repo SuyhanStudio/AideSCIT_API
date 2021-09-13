@@ -18,7 +18,7 @@ class ScheduleController: BaseController()  {
     fun getSchedule(
         @RequestParam(name = "access_token") token: String,
         sign: String, param: SemesterInfo
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         val check = checkAccessToken(token)
         return SuccessResult("schedule" to schedule.get(
             check.getUsername(), param.year, param.semester

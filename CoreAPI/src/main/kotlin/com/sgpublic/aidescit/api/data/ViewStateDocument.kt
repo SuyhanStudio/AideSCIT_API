@@ -31,8 +31,8 @@ class ViewStateDocument(
             Headers.Builder().apply {
                 for (index in 0 until size){
                     val name = name(index)
-                    if (name == APIModule.REFERER_KEY) {
-                        add(APIModule.REFERER_KEY, url)
+                    if (name == APIModule.REFERER) {
+                        add(APIModule.REFERER, url)
                     } else {
                         add(name, value(index))
                     }
@@ -114,7 +114,7 @@ class ViewStateDocument(
      * 使用 css 选择器选择 Element
      * @see Document.getElementById
      */
-    fun getElementById(id: String): Element = document.getElementById(id)
+    fun getElementById(id: String): Element? = document.getElementById(id)
 
     /**
      * 检查当前请求结果的 Document 中指定 ID 的 select 组件所选中的 value 值是否为指定的值
@@ -135,4 +135,7 @@ class ViewStateDocument(
         }
         return ""
     }
+
+    fun text(): String = document.text()
+    fun html(): String = document.html()
 }

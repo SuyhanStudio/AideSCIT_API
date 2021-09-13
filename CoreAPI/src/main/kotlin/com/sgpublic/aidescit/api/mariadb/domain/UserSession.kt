@@ -21,7 +21,13 @@ class UserSession {
     var session: String = ""
 
     @Column(name = "u_session_expired")
-    var expired: Long = APIModule.TS + 1800
+    var sessionExpired: Long = APIModule.TS + 1800
+
+    @Column(name = "u_cookie")
+    var cookie: String = ""
+
+    @Column(name = "u_cookie_expired")
+    var cookieExpired: Long = APIModule.TS + 3600
 
     @Column(name = "u_token_effective")
     var effective: Short = 1
@@ -34,7 +40,7 @@ class UserSession {
 
     @Transient
     fun isExpired(): Boolean {
-        return expired < APIModule.TS
+        return sessionExpired < APIModule.TS
     }
 
     @Transient

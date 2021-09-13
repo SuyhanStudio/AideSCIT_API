@@ -12,21 +12,21 @@ class NewsController {
     private lateinit var news: NewsModule
 
     @RequestMapping("/aidescit/news/type")
-    fun getType(sign: String): Map<String, Any> {
+    fun getType(sign: String): Map<String, Any?> {
         return SuccessResult(
             "charts" to news.getTypeChart()
         )
     }
 
     @RequestMapping("/aidescit/news/headlines")
-    fun getHeadlines(sign: String): Map<String, Any> {
+    fun getHeadlines(sign: String): Map<String, Any?> {
         return SuccessResult(
             "headlines" to news.getHeadlines()
         )
     }
 
     @RequestMapping("/aidescit/news")
-    fun listNews(tid: Int, page: Int, sign: String): Map<String, Any> {
+    fun listNews(tid: Int, page: Int, sign: String): Map<String, Any?> {
         return SuccessResult(
             "news" to news.listNewsByType(tid, page)
         )

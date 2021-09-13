@@ -1,7 +1,7 @@
 package com.sgpublic.aidescit.api.data
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.sgpublic.aidescit.api.core.util.AdvanceMap
+import com.sgpublic.aidescit.api.core.util.AdvMap
 import com.sgpublic.aidescit.api.data.ScheduleData.Companion.ScheduleDay
 import org.json.JSONObject
 
@@ -17,7 +17,7 @@ import org.json.JSONObject
  */
 @Suppress("KDocUnresolvedReference")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-class ScheduleData: AdvanceMap() {
+class ScheduleData: AdvMap() {
     val sunday: ScheduleDay get() = getSet("sunday", ScheduleDay())
     val monday: ScheduleDay get() = getSet("monday", ScheduleDay())
     val tuesday: ScheduleDay get() = getSet("tuesday", ScheduleDay())
@@ -40,7 +40,7 @@ class ScheduleData: AdvanceMap() {
          * @param ev 第 9-10 节，即晚上第一节
          */
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        class ScheduleDay: AdvanceMap() {
+        class ScheduleDay: AdvMap() {
             val am1: ScheduleItemGroup get() = getSet("am1", ScheduleItemGroup())
             val am2: ScheduleItemGroup get() = getSet("am2", ScheduleItemGroup())
             val pm1: ScheduleItemGroup get() = getSet("pm1", ScheduleItemGroup())

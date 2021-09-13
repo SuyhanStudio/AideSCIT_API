@@ -32,7 +32,7 @@ class AchieveModule {
                 "Referer" to url
             ),
             cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
+                APIModule.Cookies.SESSION_ID to session
             ),
             method = APIModule.METHOD_GET
         )
@@ -56,7 +56,7 @@ class AchieveModule {
             "Button1" to button1
         )
         val result = AchieveData()
-        doc.getElementById("DataGrid1").select("tr").forEachIndexed { index, tr ->
+        doc.getElementById("DataGrid1")!!.select("tr").forEachIndexed { index, tr ->
             if (index == 0){
                 return@forEachIndexed
             }
@@ -71,7 +71,7 @@ class AchieveModule {
             }
             result.addCurrent(item)
         }
-        doc.getElementById("Datagrid3").select("tr").forEachIndexed { index, tr ->
+        doc.getElementById("Datagrid3")!!.select("tr").forEachIndexed { index, tr ->
             if (index == 0){
                 return@forEachIndexed
             }

@@ -37,7 +37,7 @@ class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(InvalidSignException::class)
-    fun handleInvalidSignException(): Map<String, Any> {
+    fun handleInvalidSignException(): Map<String, Any?> {
         return FailedResult.INVALID_SIGN
     }
 
@@ -46,7 +46,7 @@ class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(ServiceExpiredException::class)
-    fun handleServiceExpiredException(): Map<String, Any>{
+    fun handleServiceExpiredException(): Map<String, Any?>{
         return FailedResult.SERVICE_EXPIRED
     }
 
@@ -55,7 +55,7 @@ class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(WrongPasswordException::class)
-    fun handleWrongPasswordException(): Map<String, Any>{
+    fun handleWrongPasswordException(): Map<String, Any?>{
         return FailedResult.WRONG_ACCOUNT
     }
 
@@ -64,7 +64,7 @@ class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(TokenExpiredException::class)
-    fun handleTokenExpiredException(): Map<String, Any>{
+    fun handleTokenExpiredException(): Map<String, Any?>{
         return FailedResult.EXPIRED_TOKEN
     }
 
@@ -74,7 +74,7 @@ class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun handleHttpMessageNotReadableException(): Map<String, Any> {
+    fun handleHttpMessageNotReadableException(): Map<String, Any?> {
         return FailedResult.INTERNAL_SERVER_ERROR
     }
 
@@ -83,22 +83,30 @@ class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(): Map<String, Any> {
+    fun handleMethodArgumentNotValidException(): Map<String, Any?> {
         return FailedResult.INTERNAL_SERVER_ERROR
     }
 
     /** 服务器非自身导致错误拦截 */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(ServerRuntimeException::class)
-    fun handleServerRuntimeException(e: Exception): Map<String, Any> {
+    fun handleServerRuntimeException(e: Exception): Map<String, Any?> {
         Log.w("拦截错误，${e.message}", e)
         return FailedResult.SERVER_PROCESSING_ERROR
+    }
+
+    /** 容错处理，[TODO] 拦截 */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(NotImplementedError::class)
+    fun handleNotImplementedError(e: Exception): Map<String, Any?> {
+        Log.d("拦截错误，${e.message}", e)
+        return FailedResult.NOT_IMPLEMENTATION_ERROR
     }
 
     /** 容错处理，服务器内部处理错误拦截 */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(IOException::class, JSONException::class)
-    fun handleIOException(e: Exception): Map<String, Any> {
+    fun handleIOException(e: Exception): Map<String, Any?> {
         Log.d("拦截错误，${e.message}", e)
         return FailedResult.SERVER_PROCESSING_ERROR
     }
@@ -108,7 +116,7 @@ class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(Exception::class)
-    fun handleException(e: Exception, request: HttpServletRequest): Map<String, Any> {
+    fun handleException(e: Exception, request: HttpServletRequest): Map<String, Any?> {
         Log.e("拦截错误，${e.message}", e)
         return FailedResult.INTERNAL_SERVER_ERROR
     }

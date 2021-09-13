@@ -1,7 +1,7 @@
 package com.sgpublic.aidescit.api.result
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.sgpublic.aidescit.api.core.util.AdvanceMap
+import com.sgpublic.aidescit.api.core.util.AdvMap
 
 /**
  * 处理失败结果封装
@@ -9,7 +9,7 @@ import com.sgpublic.aidescit.api.core.util.AdvanceMap
  * @param message 错误说明
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-class FailedResult(code: Int, message: String): AdvanceMap(
+class FailedResult(code: Int, message: String): AdvMap(
     "code" to code,
     "message" to message
 ) {
@@ -32,5 +32,7 @@ class FailedResult(code: Int, message: String): AdvanceMap(
         val INTERNAL_SERVER_ERROR = FailedResult(-500, "服务器内部错误")
         @JvmStatic
         val SERVER_PROCESSING_ERROR = FailedResult(-500, "请求处理出错")
+        @JvmStatic
+        val NOT_IMPLEMENTATION_ERROR = FailedResult(-500, "别买炒饭了，头发快掉光了(´╥ω╥`)")
     }
 }

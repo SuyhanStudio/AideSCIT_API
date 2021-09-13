@@ -24,4 +24,13 @@ object RSAUtil {
     fun decode(src: String): String {
         return cp.doFinal(Base64Util.decode(src)).toString(Charsets.UTF_8)
     }
+
+    /**
+     * 使用私钥解密文本
+     * @param src 需解密的文本
+     * @return 返回解密的文本
+     */
+    fun encode(src: String, cp: Cipher): String {
+        return Base64Util.encodeToString(cp.doFinal(src.toByteArray(Charsets.UTF_8)))
+    }
 }

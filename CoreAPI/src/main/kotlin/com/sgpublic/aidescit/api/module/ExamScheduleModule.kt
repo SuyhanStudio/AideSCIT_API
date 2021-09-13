@@ -22,14 +22,14 @@ class ExamScheduleModule {
                 "Referer" to url
             ),
             cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
+                APIModule.Cookies.SESSION_ID to session
             ),
             method = APIModule.METHOD_GET
         )
         val xnd: Boolean = doc.checkSelectedOption("#xnd", year)
         val xqd: Boolean = doc.checkSelectedOption("#xqd", semester.toString())
         if (xnd && xqd){
-            return parse(doc.getElementById("DataGrid1"))
+            return parse(doc.getElementById("DataGrid1")!!)
         }
         TODO("当默认未选中当前学期考试安排时逻辑待完善")
     }

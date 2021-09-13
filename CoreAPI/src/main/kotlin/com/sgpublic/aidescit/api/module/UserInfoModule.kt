@@ -61,13 +61,14 @@ class UserInfoModule {
         var doc = APIModule.executeDocument(
             url = url1,
             headers = APIModule.buildHeaders(
-                "Referer" to url1
+                APIModule.REFERER to url1
             ),
             cookies = APIModule.buildCookies(
-                APIModule.COOKIE_KEY to session
+                APIModule.Cookies.SESSION_ID to session
             ),
             method = APIModule.METHOD_GET
         )
+
         result.grade = doc.select("#lbl_dqszj").text().run {
             if (this == ""){
                 throw ServerRuntimeException("年级获取失败")

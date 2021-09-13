@@ -12,7 +12,7 @@ class DayController {
     private lateinit var day: DayModule
 
     @RequestMapping("/aidescit/day")
-    fun day(sign: String): Map<String, Any> {
+    fun day(sign: String): Map<String, Any?> {
         return day.get()
     }
 }

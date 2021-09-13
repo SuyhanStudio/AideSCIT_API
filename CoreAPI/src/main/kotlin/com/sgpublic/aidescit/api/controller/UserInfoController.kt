@@ -23,7 +23,7 @@ class UserInfoController: BaseController() {
     private lateinit var specialtyChart: SpecialtyChartRepository
 
     @RequestMapping("/aidescit/info")
-    fun getUserInfo(@RequestParam(name = "access_token") token: String): Map<String, Any> {
+    fun getUserInfo(@RequestParam(name = "access_token") token: String): Map<String, Any?> {
         val check = checkAccessToken(token)
         val user = info.get(check.getUsername())
         return SuccessResult(

@@ -19,7 +19,7 @@ class LoginController: BaseController() {
     lateinit var session: SessionModule
 
     @RequestMapping("/aidescit/login")
-    fun login(username: String, password: String, sign: String): Map<String, Any> {
+    fun login(username: String, password: String, sign: String): Map<String, Any?> {
         session.get(username, password)
         val passwordPre = RSAUtil.decode(password).apply {
             if (length <= 8) {
@@ -36,17 +36,17 @@ class LoginController: BaseController() {
     @RequestMapping("/aidescit/login/springboard")
     fun springboard(
         @RequestParam(name = "access_token") token: String, sign: String
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         val check = checkAccessToken(token)
         return SuccessResult(
-            "location" to session.getVerifyLocation(check.getUsername()).verifyLocation
+            "location" to session.getSpringboardLocation(check.getUsername()).verifyLocation
         )
     }
 
     @RequestMapping("/aidescit/login/token")
     fun refreshToken(@RequestParam(name = "access_token") access: String,
                      @RequestParam(name = "refresh_token") refresh: String,
-                     sign: String): Map<String, Any> {
+                     sign: String): Map<String, Any?> {
         val check = TokenUtil.startVerify(TokenPair(access, refresh))
         if (!check.isAccessTokenActive()){
             return FailedResult.EXPIRED_TOKEN

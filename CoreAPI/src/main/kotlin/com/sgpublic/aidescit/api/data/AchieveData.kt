@@ -3,10 +3,10 @@ package com.sgpublic.aidescit.api.data
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.sgpublic.aidescit.api.core.util.AdvanceMap
+import com.sgpublic.aidescit.api.core.util.AdvMap
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-class AchieveData: AdvanceMap() {
+class AchieveData: AdvMap() {
     private val current: CurrentAchieve get() = getSet("current", CurrentAchieve())
     private val failed: FailedAchieve get() = getSet("failed", FailedAchieve())
 
