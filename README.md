@@ -6,10 +6,10 @@
 
 + 测试环境
   + 系统：Windows 11 专业版
-  + JDK：JDK 17.0.1
+  + JDK：JDK 17.0.2
 
 + 生产环境
-  + 系统：CentOS 8.2
-  + JDK：JDK 17.0.1
+  + 系统：CentOS 8.4
+  + JDK：JDK 17.0.2
 
-+ 数据库：MariaDB 5.5.58
++ 数据库：MariaDB 10.6.7

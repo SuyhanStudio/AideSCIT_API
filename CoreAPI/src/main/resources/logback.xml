@@ -4,7 +4,7 @@
     <contextName>AideSCIT</contextName>
     <!--自定义日志转换规则，添加颜色高亮支持-->
     <conversionRule conversionWord="colored"
-                    converterClass="com.sgpublic.aidescit.api.core.spring.logback.converter.ColoredConsoleConverter"/>
+                    converterClass="io.github.sgpublic.aidescit.api.core.spring.logback.converter.ColoredConsoleConverter"/>
 
     <!--设置日志输出目录-->
     <property name="log.path" value="./log"/>
@@ -12,10 +12,10 @@
     <!--输出到控制台的 appender-->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <!--自定义过滤器，自动判断 debug 环境-->
-        <filter class="com.sgpublic.aidescit.api.core.spring.logback.filter.ConsoleFilter" />
+        <filter class="io.github.sgpublic.aidescit.api.core.spring.logback.filter.ConsoleFilter" />
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <!--自定义格式化日志布局，优化日志定位支持-->
-            <layout class="com.sgpublic.aidescit.api.core.spring.logback.ConsolePatternLayout">
+            <layout class="io.github.sgpublic.aidescit.api.core.spring.logback.ConsolePatternLayout">
                 <pattern>%colored(%d{HH:mm:ss.SSS} %-5level \(%trace\): %unc%msg%n)</pattern>
             </layout>
         </encoder>
@@ -24,7 +24,7 @@
     <!--输出到文件的 appender-->
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!--自定义过滤器-->
-        <filter class="com.sgpublic.aidescit.api.core.spring.logback.filter.FileFilter" />
+        <filter class="io.github.sgpublic.aidescit.api.core.spring.logback.filter.FileFilter" />
         <!--设置以 html 方式输出日志-->
         <file>${log.path}/logback.html</file>
         <!--设置日志分段-->

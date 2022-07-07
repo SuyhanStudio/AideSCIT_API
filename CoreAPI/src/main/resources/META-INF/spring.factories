@@ -1,2 +1,2 @@
 # 设置自定义 EnvironmentPostProcessor
-org.springframework.boot.env.EnvironmentPostProcessor=com.sgpublic.aidescit.api.core.spring.EnvironmentPostProcessorImpl
+org.springframework.boot.env.EnvironmentPostProcessor=io.github.sgpublic.aidescit.api.core.spring.EnvironmentPostProcessorImpl
